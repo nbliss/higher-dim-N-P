@@ -12,6 +12,16 @@ class inFormWrapper(object):
     def initial_forms(self):return self.forms
 
 def getInitialForms(I):
+    """
+    If the ideal is already over QQ, no need for anything fancy. We still
+    return our own inform wrapper for consistency, but do no more than call
+    gfan. Otherwise, we convert the polynomials to dicts, construct new dicts
+    with integer coefficients such that the coefficients are 1..n ordered to
+    correspond to the order of the original polys in the original list. Pass
+    these to gfan, then use the coeffs of the initial forms to figure out
+    which of the original polys they correspond to, then make some new dicts
+    and restore the original coefficents, finally wrapping as our objects.
+    """
     if I.base_ring()==QQ:
         systs = I.groebner_fan().tropical_intersection().initial_form_systems()
         return [inFormWrapper(f.initial_forms(),0-matrix(f.rays()))\
@@ -34,7 +44,7 @@ def getInitialForms(I):
             d = p.dict()
             origPolyDict = polys[d.values()[0]-1]
             origForm.append(R({k:origPolyDict[k] for k in d.keys()}))
-        origForms.append(inFormWrapper(origForm,form.rays()))
+        origForms.append(inFormWrapper(origForm,0-matrix(form.rays())))
     return origForms
 if __name__=='__main__':
     R.<x,y,z> = PolynomialRing(CC,3)
