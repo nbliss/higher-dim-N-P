@@ -13,7 +13,9 @@ class inFormWrapper(object):
 
 def getInitialForms(I):
     if I.base_ring()==QQ:
-        return I.groebner_fan().tropical_intersection().initial_form_systems()
+        systs = I.groebner_fan().tropical_intersection().initial_form_systems()
+        return [inFormWrapper(f.initial_forms(),0-matrix(f.rays()))\
+                for f in I.groebner_fan().tropical_intersection().initial_form_systems()]
     R = I.ring()
     polys = [p.dict() for p in I.gens()]
     qq_ring = I.ring().change_ring(base_ring = QQ)
@@ -34,9 +36,9 @@ def getInitialForms(I):
             origForm.append(R({k:origPolyDict[k] for k in d.keys()}))
         origForms.append(inFormWrapper(origForm,form.rays()))
     return origForms
-#if __name__=='__main__':
-R.<x,y,z> = PolynomialRing(CC,3)
-p = x^2 + y^2 + z^2 + 4*x
-q = x^2 + y^2 + 2*x
-I = (p,q)*R
-getInitialForms(I)
+if __name__=='__main__':
+    R.<x,y,z> = PolynomialRing(CC,3)
+    p = x^2 + y^2 + z^2 + 4*x
+    q = x^2 + y^2 + 2*x
+    I = (p,q)*R
+    print getInitialForms(I)

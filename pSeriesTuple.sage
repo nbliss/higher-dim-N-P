@@ -1,13 +1,17 @@
 class pSeriesTuple(object):
-    def __init__(self,first_coeffs,first_exps,expander_index=0):
-        assert len(first_coeffs)==len(first_exps)
-        self.coeffs = [first_coeffs]
-        self.exps = [first_exps]
-        self.numVars = len(first_exps)
+    def __init__(self,expander_index=0):
+        self.coeffs = []
+        self.exps = []
         self.expander_index = expander_index
+        self.numVars = 0
 
     def addTerm(self,coeffs,exps):
         self.coeffs.append(coeffs)
+        if type(exps)!=list:exps = exps.list()
+        if self.exps==[]:
+            self.exps.append(exps)
+            self.numVars = len(coeffs)
+            return
         toAdd = exps
         for i in xrange(self.numVars):
             if i==self.expander_index: continue
@@ -15,10 +19,11 @@ class pSeriesTuple(object):
         self.exps.append(toAdd)
 
     def seriesTuple(self,parameter = 't'):
+        if self.exps==[]:return []
         if type(parameter)==str:parameter = var(parameter)
         toReturn = [0]*self.numVars
-        #   a = a1  a2  a3  a4
-        #   g = g1  g2  g3  g4
+        #   a = a1  a2  a3  a4  (coeffs)
+        #   g = g1  g2  g3  g4  (exps)
         #
         #    ((a4^g3 * a3)^g2 * a2)^g1 * a1
         for variableNum in xrange(self.numVars):
@@ -37,10 +42,13 @@ class pSeriesTuple(object):
                 thisExp = self.exps[termNum][variableNum]
                 toReturn[variableNum] += thisCoeff * parameter ** thisExp
         return toReturn
+    def __repr__(self):return str(self.seriesTuple())
+    def __str__(self):return self.__repr__()
 
 if __name__=="__main__":
-    ps = pSeriesTuple([2,2,2],[1,1,1])
-    print ps.seriesTuple()
-    #ps.addTerm([1,1,1],[1,1,1])
+    ps = pSeriesTuple()
+    print ps
+    ps.addTerm([2,2,2],[1,1,1])
+    print ps
     ps.addTerm([2,1,1],[3,3,3])
-    print ps.seriesTuple()
+    print ps

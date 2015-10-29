@@ -1,4 +1,6 @@
 load("utils.sage")
+load("trop_intersection_wrapper.sage")
+load("pSeriesTuple.sage")
 """
 Outline:
 At each (recursively done) step, program asks user for which
@@ -6,6 +8,7 @@ cone to continue with
 """
 
 
+#-----------------------------------------------------------------------#
 def getRationalCoeffs(I,clockout = 3,height_bound = 0):
     """
     Searches for a rational solution to the ideal defined by I.
@@ -32,90 +35,102 @@ def getRationalCoeffs(I,clockout = 3,height_bound = 0):
             return filter(lambda pt:pt[0]==points[0][0],points)
 
 
+#-----------------------------------------------------------------------#
 def getCoeffs(I):
-    smallring = I.ring().remove_variable(R.0)
-    v = (smallring*I.subs(x=1)).variety()
+    R = I.ring()
+    smallRing = R.remove_var(R.gens()[0])
+    smallIdeal = (smallRing*I.subs(x=1))
+    v = smallIdeal.variety()
+    if v==[]:v=smallIdeal.variety(ring=CC)
     toReturn = []
     for pt in v:
         toAdd = [1]
-        toAdd+[pt[i] for i in R.gens()]
+        toAdd+=[pt[i] for i in smallRing.gens()]
         toReturn.append(toAdd)
     return toReturn
 
 
-
-EXPONENTS = []
-COEFFS = []
-RAMIND = 0
-
-def maintainSeriesList(v,c):
-    global RAMIND,EXPONENTS,COEFFS
-    if EXPONENTS ==[]:
-        EXPONENTS.append(v[1:])
-        COEFFS.append(c)
-        RAMIND = v[0]
-    else:
-        assert v[0]==1
-        oldExp = EXPONENTS[-1]
-        EXPONENTS.append([v[i+1]+oldExp[i] for i in xrange(len(v)-1)])
-        COEFFS.append(c)
-
+#-----------------------------------------------------------------------#
 def npSubstitution(I,exps,coeffs):
     """
     Finds the next ideal using exps and coeffs,
     i.e. does the higher-dim version of substituting
     x^gamma(c+y) for y as we would do in 2 dimensions
     """
+    if type(exps)!=list:exps = exps.list()
     subDict = {}
     R = I.ring()
-    for i in xrange(1,len(exps)):
+    for i in xrange(1,len(coeffs)):
         thisGen = R.gens()[i]
         subDict[thisGen] = (R.0)^exps[i]*(coeffs[i]+thisGen)
     subDict[R.0] = coeffs[0]*(R.0)^exps[0]
     subbedIdeal = I.subs(subDict)
     return subbedIdeal
 
-
-# takes an ideal I
-def newtonPuiseux(I):
-    if input("type y if done: ")=='y':
-        var('t')
-        ystuff = sum(COEFFS[i][1]*t^EXPONENTS[i][0] for i in xrange(len(COEFFS)))
-        zstuff = sum(COEFFS[i][2]*t^EXPONENTS[i][1] for i in xrange(len(COEFFS)))
-        answer = [COEFFS[0][0]*t^RAMIND]
-        answer += []
-        return answer
-    R = I.ring()
+#-----------------------------------------------------------------------#
+def printConeStuff(inForm_obj):
+    rays = matrix(inForm_obj.rays())
+    print "Cone: "
+    print rays
+    print "Initial form: ",[factor(f) for f in inForm_obj.initial_forms()]
+    print "With x=1: ",[f.subs(x=1) for f in inForm_obj.initial_forms()]
+    """
     S = LaurentPolynomialRing(R.base_ring(),R.variable_names())
-    F = I.groebner_fan().tropical_intersection()
-    inForms = F.initial_form_systems()
+    subDict = changeVariables(form.initial_forms()*R,uct(rays),S)
+    print "Substitution from UCT: ",subDict
+    sdf = [factor(S(f).subs(in_dict = subDict)) for f in form.initial_forms()]
+    print "Post-substitution: ",sdf
+    print "Without units: ",[expand(f/f.unit()) for f in sdf]
+    """
+
+#-----------------------------------------------------------------------#
+def getInput(s,myType):
+    """
+    Gets input from user with prompt s, and coerces
+    it to type myType, or repeates if failed.
+    """
+    try:return myType(raw_input(s))
+    except Exception:
+        print "Invalid entry. Expected",myType
+        return getInput(s,myType)
+
+#-----------------------------------------------------------------------#
+# takes an ideal I
+def performStep(I,SOLUTION):
+    inForms = getInitialForms(I)
     i = 0
     for form in inForms:
-        print 'i='+str(i); i+=1
-        rays = 0-matrix(form.rays())
-        subDict = changeVariables(form.initial_forms()*R,uct(rays),S)
-        print "Cone: "
-        print rays
-        print "Initial form: ",[factor(f) for f in form.initial_forms()]
-        print "With x=1: ",[f.subs(x=1) for f in form.initial_forms()]
-        """
-        print "Substitution from UCT: ",subDict
-        sdf = [factor(S(f).subs(in_dict = subDict)) for f in form.initial_forms()]
-        print "Post-substitution: ",sdf
-        print "Without units: ",[expand(f/f.unit()) for f in sdf]
-        """
+        print 'i='+str(i)+':'; i+=1
+        printConeStuff(form)
         print
     print '-'*35
-    toExpand = int(input("Choose a cone using \'i\'"))
+    toExpand = getInput("Choose a cone by giving \'i\'-->",int)
     form = inForms[toExpand]
-    v = [0-a for a in form.rays()]
-    c = getCoeffs(form.initial_forms())*R
+    rational = getInput("Try for rational coeffs? (y/anything else)",str)
+    if rational=='y':c = getRationalCoeffs(form.initial_forms()*R)
+    else: c = getCoeffs(form.initial_forms()*R)
+    v = form.rays()
     i = 0
     for pt in c:
-        print 'i=',i
+        print 'i='+str(i)+':'
         i+=1
         print pt
-    c = c[int(input("Choose coeff: "))]
-    maintainSeriesList(v,c)
-    
-    newtonPuiseux(npSubstitution(I,v,c))
+    c = c[getInput("Choose coeff by giving i-->",int)]
+    SOLUTION.addTerm(c,v)
+    print SOLUTION
+    if getInput("type y if done: ",str)=='y':return SOLUTION
+    return performStep(npSubstitution(I,v,c),SOLUTION)
+
+
+#-----------------------------------------------------------------------#
+def newtonPuiseux(I):
+    R = I.ring()
+    SOLUTION = pSeriesTuple()
+    return performStep(I,SOLUTION)
+
+#-----------------------------------------------------------------------#
+R.<x,y,z> = PolynomialRing(QQ,3)
+p = x^2 + y^2 + z^2 + 4*x
+q = x^2 + y^2 + 2*x
+I = (p,q)*R
+SOLUTION = newtonPuiseux(I)
