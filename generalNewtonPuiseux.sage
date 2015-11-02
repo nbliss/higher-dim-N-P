@@ -124,7 +124,8 @@ def performStep(I,SOLUTION):
         inForms = filter(allPos,inForms)
     if len(inForms)==1:
         form = inForms[0]
-        print "Only one exponent possibility. ",printConeStuff(form)
+        print "Only one exponent possibility. "
+        printConeStuff(form)
     else: 
         if len(inForms)==0:
             print "No satisfactory rays! Printing all..."
