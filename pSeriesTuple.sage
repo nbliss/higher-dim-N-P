@@ -44,11 +44,3 @@ class pSeriesTuple(object):
         return toReturn
     def __repr__(self):return str(self.seriesTuple())
     def __str__(self):return self.__repr__()
-
-if __name__=="__main__":
-    ps = pSeriesTuple()
-    print ps
-    ps.addTerm([2,2,2],[1,1,1])
-    print ps
-    ps.addTerm([2,1,1],[3,3,3])
-    print ps

@@ -46,9 +46,4 @@ def getInitialForms(I):
             origForm.append(R({k:origPolyDict[k] for k in d.keys()}))
         origForms.append(inFormWrapper(origForm,0-matrix(form.rays())))
     return origForms
-if __name__=='__main__':
-    R.<x,y,z> = PolynomialRing(CC,3)
-    p = x^2 + y^2 + z^2 + 4*x
-    q = x^2 + y^2 + 2*x
-    I = (p,q)*R
-    print getInitialForms(I)
+
