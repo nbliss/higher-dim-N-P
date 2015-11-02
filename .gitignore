@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Sage conversion files
+*.sage.py
+
+# Vim swap files
+*.swp
+
+# Any Grapher files
+*.gcx
+
+
+weird_stuff.txt
