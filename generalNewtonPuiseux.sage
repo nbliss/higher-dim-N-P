@@ -1,10 +1,10 @@
-load("utils.sage")
+load("UCTutils.sage")
 load("trop_intersection_wrapper.sage")
 load("pSeriesTuple.sage")
 """
 Outline:
-At each (recursively done) step, program asks user for which
-cone to continue with
+At each (recursive) step, program asks user for which
+cone to continue with.
 """
 
 
@@ -28,11 +28,13 @@ def getRationalCoeffs(I,clockout = 3,height_bound = 0):
     from time import time
     startTime = time()
     i = 1
+    points = []
     while time()-startTime<=clockout:
         points = filter(lambda pt:pt[0]!=0,A.rational_points(bound=i))
         if points==[]: i+=1
         else:
             return filter(lambda pt:pt[0]==points[0][0],points)
+    return points
 
 
 #-----------------------------------------------------------------------#
@@ -41,7 +43,7 @@ def getCoeffs(I):
     smallRing = R.remove_var(R.gens()[0])
     smallIdeal = (smallRing*I.subs(x=1))
     v = smallIdeal.variety()
-    if v==[]:v=smallIdeal.variety(ring=CC)
+    if v==[]:v=smallIdeal.variety(ring=ComplexField(15))
     toReturn = []
     for pt in v:
         toAdd = [1]
@@ -68,12 +70,13 @@ def npSubstitution(I,exps,coeffs):
     return subbedIdeal
 
 #-----------------------------------------------------------------------#
-def printConeStuff(inForm_obj):
-    rays = matrix(inForm_obj.rays())
+def printConeStuff(form):
+    rays = matrix(form.rays())
     print "Cone: "
     print rays
-    print "Initial form: ",[factor(f) for f in inForm_obj.initial_forms()]
-    print "With x=1: ",[f.subs(x=1) for f in inForm_obj.initial_forms()]
+    f = form.initial_forms()[0]
+    #print "Initial form: ",[f.factor(proof=False) for f in form.initial_forms()]
+    print "With x=1: ",[f.subs(x=1) for f in form.initial_forms()]
     """
     S = LaurentPolynomialRing(R.base_ring(),R.variable_names())
     subDict = changeVariables(form.initial_forms()*R,uct(rays),S)
@@ -82,6 +85,7 @@ def printConeStuff(inForm_obj):
     print "Post-substitution: ",sdf
     print "Without units: ",[expand(f/f.unit()) for f in sdf]
     """
+    print
 
 #-----------------------------------------------------------------------#
 def getInput(s,myType):
@@ -89,33 +93,66 @@ def getInput(s,myType):
     Gets input from user with prompt s, and coerces
     it to type myType, or repeates if failed.
     """
-    try:return myType(raw_input(s))
+    toReturn = raw_input(s)
+    if toReturn in ['q','Q']:
+        import sys
+        sys.exit()
+    try:return myType(toReturn)
     except Exception:
-        print "Invalid entry. Expected",myType
+        print "Invalid entry \'%s\'. Expected %s" %(toReturn,myType)
         return getInput(s,myType)
 
 #-----------------------------------------------------------------------#
 # takes an ideal I
 def performStep(I,SOLUTION):
+    R = I.ring()
     inForms = getInitialForms(I)
-    i = 0
-    for form in inForms:
-        print 'i='+str(i)+':'; i+=1
-        printConeStuff(form)
-        print
-    print '-'*35
-    toExpand = getInput("Choose a cone by giving \'i\'-->",int)
-    form = inForms[toExpand]
-    rational = getInput("Try for rational coeffs? (y/anything else)",str)
-    if rational=='y':c = getRationalCoeffs(form.initial_forms()*R)
-    else: c = getCoeffs(form.initial_forms()*R)
+    oldInForms = [f for f in inForms]
+    if SOLUTION.seriesTuple()==[]: #only want positive x exps for the first term
+        def xPos(form):
+            for ray in list(form.rays()):
+                if ray[0] <= 0:return False
+            return True
+        inForms = filter(xPos,inForms)
+    else: # want all exps >0 for subsequent terms
+        def allPos(form):
+            for ray in list(form.rays()):
+                for element in ray:
+                    if element <= 0:return False
+            return True
+        inForms = filter(allPos,inForms)
+    if len(inForms)==1:
+        form = inForms[0]
+        print "Only one exponent possibility: ",form.rays()
+    else: 
+        if len(inForms)==0:
+            print "No satisfactory rays! Printing all..."
+            inForms = oldInForms
+        i = 0
+        for form in inForms:
+            print 'i='+str(i)+':'; i+=1
+            printConeStuff(form)
+        print '-'*35
+        toExpand = getInput("Choose a cone by giving \'i\'--> ",int)
+        form = inForms[toExpand]
+    rational = getInput("Try for rational coeffs? (y/anything else) ",str)
+    c = []
+    if rational=='y':
+        heightBound = 0
+        #heightBound = getInput("Set height bound--> ",int)
+        c = getRationalCoeffs(form.initial_forms()*R,heightBound)
+    if c==[]: c = getCoeffs(form.initial_forms()*R)
     v = form.rays()
-    i = 0
-    for pt in c:
-        print 'i='+str(i)+':'
-        i+=1
-        print pt
-    c = c[getInput("Choose coeff by giving i-->",int)]
+    if len(c)==1:
+        c = c[0]
+        print "Only one coefficient possibility: ",c
+    else:
+        i = 0
+        for pt in c:
+            print 'i='+str(i)+':'
+            i+=1
+            print pt
+        c = c[getInput("Choose coeff by giving i--> ",int)]
     SOLUTION.addTerm(c,v)
     print SOLUTION
     if getInput("type y if done: ",str)=='y':return SOLUTION
@@ -124,13 +161,8 @@ def performStep(I,SOLUTION):
 
 #-----------------------------------------------------------------------#
 def newtonPuiseux(I):
-    R = I.ring()
+    print 'Type \'q\' at any prompt to quit'
     SOLUTION = pSeriesTuple()
     return performStep(I,SOLUTION)
 
 #-----------------------------------------------------------------------#
-R.<x,y,z> = PolynomialRing(QQ,3)
-p = x^2 + y^2 + z^2 + 4*x
-q = x^2 + y^2 + 2*x
-I = (p,q)*R
-SOLUTION = newtonPuiseux(I)
