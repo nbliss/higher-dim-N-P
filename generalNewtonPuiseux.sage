@@ -43,11 +43,12 @@ def getCoeffs(I):
     smallRing = R.remove_var(R.gens()[0])
     smallIdeal = (smallRing*I.subs(x=1))
     v = smallIdeal.variety()
-    if v==[]:v=smallIdeal.variety(ring=ComplexField(15))
+    if v==[]:v=smallIdeal.variety(ring=QQbar)
+    newRing = v[0].keys()[0].parent()
     toReturn = []
     for pt in v:
         toAdd = [1]
-        toAdd+=[pt[i] for i in smallRing.gens()]
+        toAdd+=[pt[i] for i in newRing.gens()]
         toReturn.append(toAdd)
     return toReturn
 
@@ -123,7 +124,7 @@ def performStep(I,SOLUTION):
         inForms = filter(allPos,inForms)
     if len(inForms)==1:
         form = inForms[0]
-        print "Only one exponent possibility: ",form.rays()
+        print "Only one exponent possibility. ",printConeStuff(form)
     else: 
         if len(inForms)==0:
             print "No satisfactory rays! Printing all..."
