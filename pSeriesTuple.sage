@@ -1,11 +1,11 @@
-class pSeriestuple(object):
+class pSeriesTuple(object):
     def __init__(self,expander_index=0):
         self.coeffs = []
         self.exps = []
         self.expander_index = expander_index
         self.numVars = 0
 
-    def addterm(self,coeffs,exps):
+    def addTerm(self,coeffs,exps):
         self.coeffs.append(coeffs)
         if type(exps)!=list:exps = exps.list()
         if self.exps==[]:
@@ -18,7 +18,7 @@ class pSeriestuple(object):
             else: toAdd[i] += self.exps[-1][i]
         self.exps.append(toAdd)
 
-    def seriestuple(self):
+    def seriesTuple(self):
         if self.exps==[]:return []
         myRing.<t> = self.coeffs[-1][0].base_ring()[]
         toReturn = [0]*self.numVars
@@ -42,5 +42,5 @@ class pSeriestuple(object):
                 thisExp = self.exps[termNum][variableNum]
                 toReturn[variableNum] += thisCoeff * t ** thisExp
         return toReturn
-    def __repr__(self):return str(self.seriestuple())
+    def __repr__(self):return str(self.seriesTuple())
     def __str__(self):return self.__repr__()
