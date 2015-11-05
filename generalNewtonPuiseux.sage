@@ -7,6 +7,23 @@ At each (recursive) step, program asks user for which
 cone to continue with.
 """
 
+#-----------------------------------------------------------------------#
+def reducePoly(p):
+    """
+    Factors out any extra x_i's.
+    """
+    R = p.parent()
+    toDivide = 1
+    exps = p.exponents()
+    for i in xrange(R.ngens()):
+        toDivide *= R.gens()[i]^min(map(lambda a:a[i],exps))
+    return p/toDivide
+
+def reduceIdeal(I):
+    """
+    Returns ideal with extra x_i's factored out of generators
+    """
+    return I.ring()*map(lambda a:reducePoly(a),I.gens())
 
 #-----------------------------------------------------------------------#
 def getRationalCoeffs(I,clockout = 2,height_bound = 0):
@@ -21,6 +38,7 @@ def getRationalCoeffs(I,clockout = 2,height_bound = 0):
     WARNING: definitely might return an empty list even if variety
     is non-empty and contains rational points!!!
     """
+    I = reduceIdeal(I)
     A = AffineSpace(I.ring()).subscheme(I)
     if height_bound > 0:
         points = A.rational_points(bound=height_bound)
@@ -39,6 +57,7 @@ def getRationalCoeffs(I,clockout = 2,height_bound = 0):
 
 #-----------------------------------------------------------------------#
 def getCoeffs(I):
+    I = reduceIdeal(I)
     R = I.ring()
     smallRing = R.remove_var(R.gens()[0])
     smallIdeal = (smallRing*I.subs(x=1))
