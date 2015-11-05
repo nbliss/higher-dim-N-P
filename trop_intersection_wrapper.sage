@@ -5,11 +5,20 @@ tropical prevarieties for ideals whose base ring is not QQ.
 WE WANT FOR OUR ALGORITHM ******
 """
 class inFormWrapper(object):
-    def __init__(self,forms,rayList):
+    def __init__(self,forms,rayList,rationalVersion = []):
         self.rayList = rayList
         self.forms = forms
+        if rationalVersion==[]:
+            self.rationalVersion = forms
+        else:self.rationalVersion = rationalVersion
     def rays(self):return self.rayList
     def initial_forms(self):return self.forms
+    def mixedVolume(self):
+        R = self.rationalVersion[0].parent()
+        smallRing = R.remove_var(R.gens()[0])
+        theIdeal = smallRing*(R*self.rationalVersion).subs(x=1)
+        try:return theIdeal.groebner_fan().mixed_volume()
+        except Exception,e:print "Mixed volume failed. Message: %s" % str(e)
 
 def getInitialForms(I):
     """
@@ -44,6 +53,6 @@ def getInitialForms(I):
             d = p.dict()
             origPolyDict = polys[d.values()[0]-1]
             origForm.append(R({k:origPolyDict[k] for k in d.keys()}))
-        origForms.append(inFormWrapper(origForm,0-matrix(form.rays())))
+        origForms.append(inFormWrapper(origForm,0-matrix(form.rays()),form.initial_forms()))
     return origForms
 
