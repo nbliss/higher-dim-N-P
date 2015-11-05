@@ -9,7 +9,7 @@ cone to continue with.
 
 
 #-----------------------------------------------------------------------#
-def getRationalCoeffs(I,clockout = 3,height_bound = 0):
+def getRationalCoeffs(I,clockout = 2,height_bound = 0):
     """
     Searches for a rational solution to the ideal defined by I.
     If height_bound is specified and greater than 0, uses it as
@@ -75,16 +75,20 @@ def printConeStuff(form):
     rays = matrix(form.rays())
     print "Cone: "
     print rays
-    f = form.initial_forms()[0]
+    f = form.initial_forms()
+    print "initial form: ",f
     #print "Initial form: ",[f.factor(proof=False) for f in form.initial_forms()]
     print "With x=1: ",[f.subs(x=1) for f in form.initial_forms()]
+    print "mixed volume: ",form.mixedVolume()
     """
-    S = LaurentPolynomialRing(R.base_ring(),R.variable_names())
-    subDict = changeVariables(form.initial_forms()*R,uct(rays),S)
+    S = LaurentPolynomialRing(QQbar,R.variable_names())
+    subDict = changeVariables(form.initial_forms()*R.change_ring(QQbar),uct(rays),S)
     print "Substitution from UCT: ",subDict
-    sdf = [factor(S(f).subs(in_dict = subDict)) for f in form.initial_forms()]
+    #sdf = [factor(S(f).subs(in_dict = subDict),proof=False) for f in form.initial_forms()]
+    sdf = [S(f).subs(in_dict = subDict) for f in form.initial_forms()]
     print "Post-substitution: ",sdf
-    print "Without units: ",[expand(f/f.unit()) for f in sdf]
+    print [f.subs(x=1) for f in sdf]
+    #print "Without units: ",[expand(f/f.unit()) for f in sdf]
     """
     print
 
@@ -100,12 +104,13 @@ def getInput(s,myType):
         sys.exit()
     try:return myType(toReturn)
     except Exception:
-        print "Invalid entry \'%s\'. Expected %s" %(toReturn,myType)
+        print "Invalid entry \'%s\', expected %s. Type 'q' to quit." %(toReturn,myType)
         return getInput(s,myType)
 
 #-----------------------------------------------------------------------#
 # takes an ideal I
 def performStep(I,SOLUTION):
+    #if SOLUTION.seriesTuple()!=[]:return I
     R = I.ring()
     inForms = getInitialForms(I)
     oldInForms = [f for f in inForms]
@@ -134,16 +139,20 @@ def performStep(I,SOLUTION):
         for form in inForms:
             print 'i='+str(i)+':'; i+=1
             printConeStuff(form)
-        print '-'*35
         toExpand = getInput("Choose a cone by giving \'i\'--> ",int)
         form = inForms[toExpand]
-    rational = getInput("Try for rational coeffs? (y/anything else) ",str)
+
+    rational = 'n'
+    if SOLUTION.seriesTuple()==[]:
+        rational = getInput("Try for rational coeffs? (y/anything else) ",str)
     c = []
     if rational=='y':
-        heightBound = 0
+        #heightBound = 0
         #heightBound = getInput("Set height bound--> ",int)
-        c = getRationalCoeffs(form.initial_forms()*R,heightBound)
-    if c==[]: c = getCoeffs(form.initial_forms()*R)
+        c = getRationalCoeffs(form.initial_forms()*R)
+    if c==[]:
+        if rational=='y':print "Sorry, no rational points found."
+        c = getCoeffs(form.initial_forms()*R)
     v = form.rays()
     if len(c)==1:
         c = c[0]
@@ -157,7 +166,7 @@ def performStep(I,SOLUTION):
         c = c[getInput("Choose coeff by giving i--> ",int)]
     SOLUTION.addTerm(c,v)
     print SOLUTION
-    if getInput("type y if done: ",str)=='y':return SOLUTION
+    if getInput("Type y if done: ",str)=='y':return SOLUTION
     return performStep(npSubstitution(I,v,c),SOLUTION)
 
 
