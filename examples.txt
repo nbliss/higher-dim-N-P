@@ -32,8 +32,9 @@ I = R*(1/2*x*z*w - 5*z^2, y*w - 1/3*z, 14*y^2 - 8*z^2 - 1/3*y*w + w^2 - x)
 sol = newtonPuiseux(I)
 
 # works even with negative exponents?
-1/160*x^2 - x*y + z^2 - z + 1/2, 1/2*x*y + 1/2*x*z - y*z - 22/5*x
-
+R.<x,y,z> = QQ[]
+I = R*(1/160*x^2 - x*y + z^2 - z + 1/2, 1/2*x*y + 1/2*x*z - y*z - 22/5*x)
+sol = newtonPuiseux(I)
 
 # Different exponent increments for y & z
 R.<x,y,z> = QQ[]
@@ -44,5 +45,3 @@ sol = newtonPuiseux(I)
 R.<x,y,z> = QQ[]
 I = R*(y*(1-x^5)-1,z*(1-x^3)-1)
 sol = newtonPuiseux(I)
-
-
