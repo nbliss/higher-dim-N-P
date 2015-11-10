@@ -36,14 +36,19 @@ def getInitialForms(I):
         return [inFormWrapper(f.initial_forms(),0-matrix(f.rays()))\
                 for f in I.groebner_fan().tropical_intersection().initial_form_systems()]
     R = I.ring()
+    """
     polys = [p.dict() for p in I.gens()]
     qq_ring = I.ring().change_ring(base_ring = QQ)
     rationalCoeffPolys = []
     for i in xrange(len(polys)):
         rationalCoeffPolys.append(qq_ring(dict.fromkeys(polys[i],i+1)))
-    # polys = [0.5x - y,  x^2 + 0.7 y]
-    # rCP   = [  1x -1y, 2x^2 +   2 y]
     qq_ideal = qq_ring * rationalCoeffPolys
+    """
+
+    polys = I.gens()
+    qq_ring = I.ring().change_ring(base_ring = QQ)
+    qq_ideal = qq_ring*[p.map_coefficients(lambda a:1,new_base_ring=QQ) for p in polys]
+
     F = qq_ideal.groebner_fan().tropical_intersection()
     forms = F.initial_form_systems()
     origForms = []
