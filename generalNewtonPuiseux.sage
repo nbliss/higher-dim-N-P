@@ -13,11 +13,16 @@ def reducePoly(p):
     Factors out any extra x_i's.
     """
     R = p.parent()
-    toDivide = 1
+    nVars = R.ngens()
+    toSubtract = [0]*nVars
     exps = p.exponents()
-    for i in xrange(R.ngens()):
-        toDivide *= R.gens()[i]^min(map(lambda a:a[i],exps))
-    return p/toDivide
+    for i in xrange(nVars):
+        toSubtract[i] = min(map(lambda a:a[i],exps))
+    d = p.dict()
+    newDict = {}
+    for exponent in p.exponents():
+        newDict[tuple([int(exponent[i]-toSubtract[i]) for i in xrange(nVars)])] = d[exponent]
+    return R(newDict)
 
 def reduceIdeal(I):
     """
