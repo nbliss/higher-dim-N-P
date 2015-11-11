@@ -45,3 +45,12 @@ sol = newtonPuiseux(I)
 R.<x,y,z> = QQ[]
 I = R*(y*(1-x^5)-1,z*(1-x^3)-1)
 sol = newtonPuiseux(I)
+
+
+# sphere and twisted cubic
+R.<x,y,z> = QQ[]
+p = (x^2 + y^2 + (z-1)^2 - 1)*(y - x^2)
+q = (x^2 + y^2 + (z-1)^2 - 1)*(z - x^3)
+I = (p,q)*R
+newtonPuiseux(I)
+
