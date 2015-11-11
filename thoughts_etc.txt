@@ -1,0 +1,14 @@
+Weird stuff:
+
+Cone: 
+[2 1 1]
+[0 0 1]
+Initial form:  [y^2 + 4*x, y^2 + 2*x]
+Substitution from UCT:  {y: x, x: x^2*z, z: x*y}
+Post-substitution:  [(x^2) * (4*z + 1), (x^2) * (2*z + 1)]
+Without units:  [4*z + 1, 2*z + 1]
+No solutions after UCT?!? Because no solution w/ x!=0?
+
+
+
+Proposition: if an initial form system (with x=1 substituted) has dimension >0, one is trying to expand a curve that lies on a higher dimensional component.
