@@ -134,8 +134,15 @@ def getInput(s,myType):
 #-----------------------------------------------------------------------#
 # takes an ideal I
 def performStep(I,SOLUTION):
-    #if SOLUTION.seriesTuple()!=[]:return I
     R = I.ring()
+    completeTest = I.subs(in_dict={i:0 for i in R.gens()[1:]})
+    print "Linear portion:"
+    for p in I.gens():
+        linearExps = filter(lambda a:sum(a[1:])<2,p.dict().keys())
+        print R({e:p.dict()[e] for e in linearExps})
+    if completeTest==R*0:
+        print 'Done!'
+        return SOLUTION
     inForms = getInitialForms(I)
     oldInForms = [f for f in inForms]
     if SOLUTION.seriesTuple()==[]: #only want positive x exps for the first term
@@ -157,8 +164,12 @@ def performStep(I,SOLUTION):
         printConeStuff(form)
     else: 
         if len(inForms)==0:
+            print "No satisfactory rays! Exiting..."
+            return SOLUTION
+            """
             print "No satisfactory rays! Printing all..."
             inForms = oldInForms
+            """
         i = 0
         for form in inForms:
             print 'i='+str(i)+':'; i+=1
@@ -167,8 +178,8 @@ def performStep(I,SOLUTION):
         form = inForms[toExpand]
 
     rational = 'n'
-    if SOLUTION.seriesTuple()==[]:
-        rational = getInput("Try for rational coeffs? (y/anything else) ",str)
+    #if SOLUTION.seriesTuple()==[]:
+    rational = getInput("Try for rational coeffs? (y/anything else) ",str)
     c = []
     if rational=='y':
         #heightBound = 0
