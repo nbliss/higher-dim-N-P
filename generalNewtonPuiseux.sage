@@ -1,4 +1,4 @@
-load("UCTutils.sage")
+load("utils.sage")
 load("trop_intersection_wrapper.sage")
 load("pSeriesTuple.sage")
 """
@@ -12,6 +12,7 @@ def reducePoly(p):
     """
     Factors out any extra x_i's.
     """
+    if p==0:return p
     R = p.parent()
     nVars = R.ngens()
     toSubtract = [0]*nVars
@@ -135,6 +136,8 @@ def getInput(s,myType):
 # takes an ideal I
 def performStep(I,SOLUTION):
     R = I.ring()
+    print I
+    print '-'*44
     completeTest = I.subs(in_dict={i:0 for i in R.gens()[1:]})
     print "Linear portion:"
     for p in I.gens():
@@ -202,6 +205,9 @@ def performStep(I,SOLUTION):
     SOLUTION.addTerm(c,v)
     print SOLUTION
     if getInput("Type y if done: ",str)=='y':return SOLUTION
+    # check if one of the series is finished
+    for i in xrange(I.ngens()):
+        
     return performStep(npSubstitution(I,v,c),SOLUTION)
 
 
