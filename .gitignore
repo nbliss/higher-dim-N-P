@@ -12,3 +12,6 @@ __pycache__/
 # Any Grapher files
 *.gcx
 
+*.aux
+*.log
+*.pdf
