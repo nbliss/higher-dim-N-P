@@ -68,7 +68,8 @@ def getCoeffs(I):
     smallRing = R.remove_var(R.gens()[0])
     smallIdeal = (smallRing*I.subs(x=1))
     v = smallIdeal.variety()
-    if v==[]:v=smallIdeal.variety(ring=QQbar)
+    if v==[]:v = smallIdeal.variety(QQbar)
+    if v==[]:raise Exception("System has no solutions!!")
     newRing = v[0].keys()[0].parent()
     toReturn = []
     for pt in v:
@@ -180,6 +181,11 @@ def performStep(I,SOLUTION):
         toExpand = getInput("Choose a cone by giving \'i\'--> ",int)
         form = inForms[toExpand]
 
+    if form.rays().nrows()>1:
+        print "You chose the higher dim cone"
+        print form.rays()
+        form = form.changeRays(getInput("Enter a ray inside it: ",eval))
+        print form.rays()
     rational = 'n'
     #if SOLUTION.seriesTuple()==[]:
     rational = getInput("Try for rational coeffs? (y/anything else) ",str)
@@ -205,9 +211,9 @@ def performStep(I,SOLUTION):
     SOLUTION.addTerm(c,v)
     print SOLUTION
     if getInput("Type y if done: ",str)=='y':return SOLUTION
-    # check if one of the series is finished
-    for i in xrange(I.ngens()):
-        
+    #################################################################
+    ###   Need to check if one of the series is finished!!!!!!!   ###
+    #################################################################
     return performStep(npSubstitution(I,v,c),SOLUTION)
 
 
