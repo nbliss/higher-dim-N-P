@@ -12,6 +12,12 @@ class inFormWrapper(object):
             self.rationalVersion = forms
         else:self.rationalVersion = rationalVersion
     def rays(self):return self.rayList
+    def changeRays(self,rays):
+        """
+        Returns an inFormWrapper with the current data but rays
+        subbed for the current rays
+        """
+        return inFormWrapper(self.forms,rays,self.rationalVersion)
     def initial_forms(self):return self.forms
     def mixedVolume(self):
         R = self.rationalVersion[0].parent()
