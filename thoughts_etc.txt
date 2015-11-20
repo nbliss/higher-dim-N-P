@@ -35,6 +35,8 @@ x^2 - 1/4*x*y - 1/4*z^2 - 2*x
 
 {1: [[0], [1], [2], [3], [4], [5]], 2: [[0, 1], [0, 2], [0, 3]]}
 {1: [[0], [1], [2], [3], [4]]}
+
+tropical basis adds -21/23*z^3 + 14/115*x*y + 28/23*x*z + x
 ----------------------------------------
 
 
@@ -49,5 +51,10 @@ x^2 - 1/4*x*y - 1/4*z^2 - 2*x
 {1: [[0], [1], [2], [3], [4], [5]]}
 ----------------------------------------
 
+
+From the second example, we've learned: without a tropical basis, we could be missing rays. Even if we know these rays, we don't know the entire initial form system and thus don't know the coefficients, so the algorithm could fail. What we can say is that every ray in the tropical variety is contained in a cone in the prevariety. So the 1-d stuff will be some subset of the rays, plus stuff that lies in the interior of higher dimensional cones. If a ray isn't in the tropical variety the expansion will fail.
+
+
+Still need to make it work when one of the coordinates has a terminating series.
 
 Proposition: if an initial form system (with x=1 substituted) has dimension >0, one is trying to expand a curve that lies on a higher dimensional component.
