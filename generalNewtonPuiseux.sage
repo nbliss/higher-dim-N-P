@@ -69,7 +69,7 @@ def getCoeffs(I):
     smallIdeal = (smallRing*I.subs(x=1))
     v = smallIdeal.variety()
     if v==[]:v = smallIdeal.variety(QQbar)
-    if v==[]:raise Exception("System has no solutions!!")
+    if v==[]:raise Exception("Initial form system has no solutions!!")
     newRing = v[0].keys()[0].parent()
     toReturn = []
     for pt in v:
@@ -137,13 +137,15 @@ def getInput(s,myType):
 # takes an ideal I
 def performStep(I,SOLUTION):
     R = I.ring()
-    print I
     print '-'*44
-    completeTest = I.subs(in_dict={i:0 for i in R.gens()[1:]})
+    """
+    print I
     print "Linear portion:"
     for p in I.gens():
         linearExps = filter(lambda a:sum(a[1:])<2,p.dict().keys())
         print R({e:p.dict()[e] for e in linearExps})
+    """
+    completeTest = I.subs(in_dict={i:0 for i in R.gens()[1:]})
     if completeTest==R*0:
         print 'Done!'
         return SOLUTION
