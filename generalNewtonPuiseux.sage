@@ -11,12 +11,14 @@ cone to continue with.
 def reducePoly(p):
     """
     Factors out any extra x_i's.
+    UNLESS p is a monomial
     """
     if p==0:return p
+    exps = p.exponents()
+    if len(exps)==1:return p
     R = p.parent()
     nVars = R.ngens()
     toSubtract = [0]*nVars
-    exps = p.exponents()
     for i in xrange(nVars):
         toSubtract[i] = min(map(lambda a:a[i],exps))
     d = p.dict()
@@ -67,6 +69,7 @@ def getCoeffs(I):
     R = I.ring()
     smallRing = R.remove_var(R.gens()[0])
     smallIdeal = (smallRing*I.subs(x=1))
+    print smallIdeal,'<'+'-'*10
     v = smallIdeal.variety()
     if v==[]:v = smallIdeal.variety(QQbar)
     if v==[]:raise Exception("Initial form system has no solutions!!")
@@ -106,15 +109,15 @@ def printConeStuff(form):
     #print "Initial form: ",[f.factor(proof=False) for f in form.initial_forms()]
     print "With x=1: ",[f.subs(x=1) for f in form.initial_forms()]
     print "mixed volume: ",form.mixedVolume()
-    """
     S = LaurentPolynomialRing(QQbar,R.variable_names())
     subDict = changeVariables(form.initial_forms()*R.change_ring(QQbar),uct(rays),S)
     print "Substitution from UCT: ",subDict
     #sdf = [factor(S(f).subs(in_dict = subDict),proof=False) for f in form.initial_forms()]
     sdf = [S(f).subs(in_dict = subDict) for f in form.initial_forms()]
     print "Post-substitution: ",sdf
-    print [f.subs(x=1) for f in sdf]
+    print "With x=1: ",[f.subs(x=1) for f in sdf]
     #print "Without units: ",[expand(f/f.unit()) for f in sdf]
+    """
     """
     print
 
@@ -138,8 +141,8 @@ def getInput(s,myType):
 def performStep(I,SOLUTION):
     R = I.ring()
     print '-'*44
-    """
     print I
+    """
     print "Linear portion:"
     for p in I.gens():
         linearExps = filter(lambda a:sum(a[1:])<2,p.dict().keys())
