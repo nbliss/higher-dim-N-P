@@ -12,6 +12,9 @@ __pycache__/
 # Any Grapher files
 *.gcx
 
+# Latex extra files
+*.fdb_latexmk
+*.fls
 *.aux
 *.log
 *.pdf
