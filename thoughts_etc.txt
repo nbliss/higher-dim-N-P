@@ -57,4 +57,4 @@ From the second example, we've learned: without a tropical basis, we could be mi
 
 Still need to make it work when one of the coordinates has a terminating series.
 
-Proposition: if an initial form system (with x=1 substituted) has dimension >0, one is trying to expand a curve that lies on a higher dimensional component.
+Proposition: if an initial form system (with x=1 substituted) has dimension >0, one is trying to expand a curve that lies on a higher dimensional component. FALSE: by the weird example above, could have trop var ray that lies in 2d trop prevar cone which has 1d inform syst, but actually variety is only 1d.
