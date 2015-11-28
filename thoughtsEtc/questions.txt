@@ -1,1 +1,0 @@
-What if initial form system has 0 as solutions in a component? I.e. one of the equations is divisible by x_i.
