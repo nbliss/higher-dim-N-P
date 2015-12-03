@@ -10,6 +10,12 @@ def findTropVar(J):
     F = J.groebner_fan().tropical_basis()
     J = R*F
     return J.groebner_fan().tropical_intersection()
+
+I2 = R*(43/246*x*z - 66/71*y*z + 287/402*z^2 - 88/169*x, -94/69*z^3 - 76/215*x*y + 367/315*y*z + 130/383*z^2 - 21/34*x)
+
+n = 40
+l = map(lambda a: a/n,range(1,n))
+
 totalBad = 0
 import sys
 for i in xrange(500):
