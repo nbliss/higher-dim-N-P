@@ -1,8 +1,8 @@
-"""
-Computes the UCT based on Vector, which
-is a vector or list of vectors.
-"""
 def uct(Vector):
+    """
+    Computes the UCT based on Vector, which
+    is a vector or list of vectors.
+    """
     def ConvertMatrixToList(Matrix):
         Pts = []
         for Row in Matrix.transpose():
@@ -14,12 +14,12 @@ def uct(Vector):
     UCT = ((UCT)^-1)
     return UCT.transpose()
 
-"""
-Given a matrix mat (from a UCT) and a ring R,
-constructs a dictionary giving the change-of-variables
-associated with mat.
-"""
 def changeVariables(I,mat,R):
+    """
+    Given a matrix mat (from a UCT) and a ring R,
+    constructs a dictionary giving the change-of-variables
+    associated with mat.
+    """
     subDict = {}
     for i in xrange(len(mat.columns())):
         col = mat.columns()[i]
