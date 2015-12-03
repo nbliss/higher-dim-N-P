@@ -14,12 +14,13 @@ def uct(Vector):
     UCT = ((UCT)^-1)
     return UCT.transpose()
 
-def changeVariables(I,mat,R):
+def changeVariables(I,mat):
     """
-    Given a matrix mat (from a UCT) and a ring R,
-    constructs a dictionary giving the change-of-variables
+    Given a matrix mat (from a UCT), constructs
+    a dictionary giving the change-of-variables
     associated with mat.
     """
+    R = I.ring()
     subDict = {}
     for i in xrange(len(mat.columns())):
         col = mat.columns()[i]

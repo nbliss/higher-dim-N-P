@@ -15,7 +15,7 @@ def tropStep(I,verbose=False):
     for form in inForms:
         if verbose:print 'i='+str(i); i+=1
         rays = 0-matrix(form.rays())
-        subDict = changeVariables(form.initial_forms()*R,uct(rays),S)
+        subDict = changeVariables(form.initial_forms()*R,uct(rays))
         if verbose:
             print "Cone: "
             print rays

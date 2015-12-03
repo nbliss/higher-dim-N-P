@@ -110,7 +110,7 @@ def printConeStuff(form):
     print "With x=1: ",[f.subs(x=1) for f in form.initial_forms()]
     print "mixed volume: ",form.mixedVolume()
     S = LaurentPolynomialRing(QQbar,R.variable_names())
-    subDict = changeVariables(form.initial_forms()*R.change_ring(QQbar),uct(rays),S)
+    subDict = changeVariables(form.initial_forms()*R.change_ring(QQbar),uct(rays))
     print "Substitution from UCT: ",subDict
     #sdf = [factor(S(f).subs(in_dict = subDict),proof=False) for f in form.initial_forms()]
     sdf = [S(f).subs(in_dict = subDict) for f in form.initial_forms()]
