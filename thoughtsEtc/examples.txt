@@ -73,3 +73,8 @@ p = z*(x-2)-1
 q = (x-1)^2+y^2-1
 I = R*(p,q)
 newtonPuiseux(I)
+
+# Bad tropical prevariety
+R.<x,y,z> = PolynomialRing(QQ,3)
+I = R * (x*z - y*z - z^2 + x, z^3 - x*y - y*z - z^2 - x)
+newtonPuiseux(I)
