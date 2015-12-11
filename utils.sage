@@ -47,3 +47,6 @@ def initialForm(p,v):
             smallestExps = [exponent]
         elif m==minDot:smallestExps.append(exponent)
     return p.parent()({e:d[e] for e in smallestExps})
+
+def initialGeneratorIdeal(I,v):
+    return I.ring()*map(lambda a:initialForm(a,v),I.gens())
