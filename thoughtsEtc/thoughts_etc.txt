@@ -66,3 +66,8 @@ Proposition: if an initial form system (with x=1 substituted) has dimension >0, 
 
 
 What if initial form system has 0 as solutions in a component? I.e. one of the equations is divisible by x_i.
+
+
+
+
+Prop: for n-1 polynomials in n unknowns, the 1-skeleton of the tropical prevariety is the tropical variety for generic choices of the coefficients of the polynomials.
