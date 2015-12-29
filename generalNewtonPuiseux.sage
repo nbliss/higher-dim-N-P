@@ -109,6 +109,7 @@ def printConeStuff(form):
     #print "Initial form: ",[f.factor(proof=False) for f in form.initial_forms()]
     print "With x=1: ",[f.subs(x=1) for f in form.initial_forms()]
     print "mixed volume: ",form.mixedVolume()
+    """
     S = LaurentPolynomialRing(QQbar,R.variable_names())
     subDict = changeVariables(form.initial_forms()*R.change_ring(QQbar),uct(rays))
     print "Substitution from UCT: ",subDict
@@ -117,7 +118,6 @@ def printConeStuff(form):
     print "Post-substitution: ",sdf
     print "With x=1: ",[f.subs(x=1) for f in sdf]
     #print "Without units: ",[expand(f/f.unit()) for f in sdf]
-    """
     """
     print
 
@@ -148,10 +148,12 @@ def performStep(I,SOLUTION):
         linearExps = filter(lambda a:sum(a[1:])<2,p.dict().keys())
         print R({e:p.dict()[e] for e in linearExps})
     """
+    """
     completeTest = I.subs(in_dict={i:0 for i in R.gens()[1:]})
     if completeTest==R*0:
         print 'Done!'
         return SOLUTION
+    """
     inForms = getInitialForms(I)
     oldInForms = [f for f in inForms]
     if SOLUTION.seriesTuple()==[]: #only want positive x exps for the first term
