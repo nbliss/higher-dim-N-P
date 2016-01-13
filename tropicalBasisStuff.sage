@@ -19,20 +19,26 @@ def projectedRays(I,n):
 
 def randomCoeffs(I,height_bound=300):
     """
-    Given an ideal I, checks rays of trop prevariety vs
-    variety for random choices of the coefficients of the
-    gens of I.
+    Returns an ideal w/ same generators as I but random
+    coefficients.
     """
     d_i = []
     for p in I.gens():
         d_i.append({a:QQ.random_element(height_bound,height_bound) for a in p.dict().keys()})
-    newI = R*d_i
+    return R*d_i
+
+def checkRandomTrop(I,height_bound=300):
+    """
+    Given an ideal I, checks rays of trop prevariety vs
+    variety for random choices of the coefficients of the
+    gens of I.
+    """
+    newI = randomCoeffs(I,height_bound)
     prevariety = newI.groebner_fan().tropical_intersection()
     variety = findTropVar(newI)
     if not prevariety.rays()==variety.rays():
         return newI
     return True
-
 
 def findTropVar(J):
     """
