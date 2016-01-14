@@ -1,23 +1,41 @@
 \documentclass[12pt]{amsart}
-\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
-\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+\usepackage{geometry}% [paperheight=5in]     % See geometry.pdf to learn the layout options. There are lots.
+%\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
 %\geometry{landscape}                % Activate for for rotated page geometry
 %\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
 \usepackage{graphicx}
-\usepackage{lipsum}
+\usepackage[parfill]{parskip}
 \usepackage{amssymb}
-\usepackage{cite}
 \usepackage{tikz}
+\usepackage{cite}
 \usepackage{algpseudocode}
 
-\date{\today}
-\author{Nathan Bliss \and Jan Verschelde}
-%\date{}                                           % Activate to display a given date or no date
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\newenvironment{definition}[1][Definition]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{example}[1][Example]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{remark}[1][Remark]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 
 \begin{document}
-Proposition: For $n$ equations in $n+1$ unknowns with generic coefficients, the 1-skeleton of the tropical prevariety contains the tropical variety.
-Proof:
+
+\begin{proposition}
+For $n$ equations in $n+1$ unknowns with generic coefficients, the 1-skeleton of the tropical prevariety contains the tropical variety.
+\end{proposition}
+
+\begin{proof}
+The tropical variety always contains the prevariety, so it suffices to prove that no ray in the interior of a higher dimensional cone of the prevariety lies in the tropical variety. Let $I=\langle p_1,\ldots,p_n\rangle \subseteq \mathbb{C}[x_0,\ldots,x_n]$, and let $\mathbf{w}$ be a ray in the tropical prevariety but not in its 1-skeleton. We want to show that $\mathbf{w}$ is not in the tropical variety, or equivalently that $\text{in}_\mathbf{w}(I)$ contains a monomial. We will do so by showing that $I_\mathbf{w}:=\langle \text{in}_\mathbf{w}(p_1),\ldots,\text{in}_\mathbf{w}(p_n)\rangle$ contains a monomial, which suffices since this ideal is contained in $\text{in}_\mathbf{w}(I)$.
+
+Suppose $I_\mathbf{w}$ contains no monomial. Then $(x_0x_1\cdots x_n)^k\notin I_\mathbf{w}$ for any $k$, hence by Hilbert's Nullstellensatz $V:=\mathbb{V}(I_\mathbf{w})\nsubseteq \mathbb{V}(x_0x_1\cdots x_n)$, i.e.\ $V$ is not contained in the union of the coordinate hyperplanes. Then there exists $a=(a_0,\ldots,a_n)\in V$ such that all coordinates of $a$ are all nonzero. Since $\mathbf{w}$ lies in the interior a cone of dimension at least 2, the generators of $I_\mathbf{w}$ are homogenous with respect to at least two nonequal rays {\bf u} and {\bf v}. Thus $(\lambda^{\mathbf{u}_0}\mu^{\mathbf{v}_0} a_0,\ldots,\lambda^{\mathbf{u}_n}\mu^{\mathbf{v}_n} a_n)\in V$ for all $\lambda,\mu\in\mathbb{C}\setminus\{0\}$ where the $\mathbf{u}_i,\mathbf{v}_i$ are the components of $\bf u$ and $\bf v$, and $V$ contains a toric surface. But since the coefficients of all the $p_i$ were generic, we know that $V$ is the union of something at most 1-dimensional with possibly some combination of coordinate planes, hence it can contain no surface outside of the coordinate planes and this is a contradiction.
+\end{proof}
 
 
+
+%$\mathbb{A}\mathbb{B}\mathbb{C}\mathbb{D}\mathbb{E}\mathbb{F}\mathbb{G}\mathbb{H}\mathbb{I}\mathbb{J}\mathbb{K}\mathbb{L}\mathbb{M}\mathbb{N}\mathbb{O}\mathbb{P}\mathbb{Q}\mathbb{R}\mathbb{S}\mathbb{T}\mathbb{U}\mathbb{V}\mathbb{W}\mathbb{X}\mathbb{Y}\mathbb{Z}$
 
 \end{document}
