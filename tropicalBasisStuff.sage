@@ -16,7 +16,7 @@ def randomCoeffs(I,height_bound=300):
     """
     d_i = []
     for p in I.gens():
-        d_i.append({a:myRandomQQ  for a in p.dict().keys()})
+        d_i.append({a:myRandomQQ() for a in p.dict().keys()})
     return R*d_i
 
 def myRandomQQ(height_bound=300):
