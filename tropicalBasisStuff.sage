@@ -1,12 +1,4 @@
 import sys
-
-def randomPolys(n):
-    """
-    Given n, checks rays of trop prevariety vs variety for
-    n-1 polys in n unknowns.
-    """
-    return
-
 def projectedRays(I,n):
     """
     Compute the n-th elimination ideal, then
@@ -24,8 +16,14 @@ def randomCoeffs(I,height_bound=300):
     """
     d_i = []
     for p in I.gens():
-        d_i.append({a:QQ.random_element(height_bound,height_bound) for a in p.dict().keys()})
+        d_i.append({a:myRandomQQ  for a in p.dict().keys()})
     return R*d_i
+
+def myRandomQQ(height_bound=300):
+    a = QQ.random_element(num_bound=height_bound,den_bound=height_bound)
+    while a==0:
+        a = QQ.random_element(num_bound=height_bound,den_bound=height_bound)
+    return a
 
 def checkRandomTrop(I,height_bound=300):
     """
