@@ -22,7 +22,7 @@ class inFormWrapper(object):
     def mixedVolume(self):
         R = self.rationalVersion[0].parent()
         smallRing = R.remove_var(R.gens()[0])
-        theIdeal = smallRing*(R*self.rationalVersion).subs(x=1)
+        theIdeal = smallRing*(R*self.rationalVersion).subs({R.0:1})
         try:return theIdeal.groebner_fan().mixed_volume()
         except Exception,e:print "Mixed volume failed. Message: %s" % str(e)
 
