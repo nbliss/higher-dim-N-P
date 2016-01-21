@@ -68,10 +68,10 @@ def getCoeffs(I):
     I = reduceIdeal(I)
     R = I.ring()
     smallRing = R.remove_var(R.gens()[0])
-    smallIdeal = (smallRing*I.subs(x=1))
+    smallIdeal = (smallRing*I.subs({R.0:1}))
     print smallIdeal,'<'+'-'*10
     v = smallIdeal.variety()
-    if v==[]:v = smallIdeal.variety(QQbar)
+    if v==[]:v = smallIdeal.variety(CC)
     if v==[]:raise Exception("Initial form system has no solutions!!")
     newRing = v[0].keys()[0].parent()
     toReturn = []
@@ -106,9 +106,11 @@ def printConeStuff(form):
     print rays
     f = form.initial_forms()
     print "initial form: ",f
+    R = f[0].parent()
     #print "Initial form: ",[f.factor(proof=False) for f in form.initial_forms()]
-    print "With x=1: ",[f.subs(x=1) for f in form.initial_forms()]
-    print "mixed volume: ",form.mixedVolume()
+    print "With x=1: ",[f.subs({R.0:1}) for f in form.initial_forms()]
+    vol = form.mixedVolume()
+    if vol!=None:print "mixed volume: ",vol
     """
     S = LaurentPolynomialRing(QQbar,R.variable_names())
     subDict = changeVariables(form.initial_forms()*R.change_ring(QQbar),uct(rays))
@@ -119,6 +121,8 @@ def printConeStuff(form):
     print "With x=1: ",[f.subs(x=1) for f in sdf]
     #print "Without units: ",[expand(f/f.unit()) for f in sdf]
     """
+    uctSubbed = uctSub(R*form.initial_forms(),rays)
+    print "Post-substitution from UCT: ",uctSubbed 
     print
 
 #-----------------------------------------------------------------------#
