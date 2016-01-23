@@ -69,7 +69,6 @@ def getCoeffs(I):
     R = I.ring()
     smallRing = R.remove_var(R.gens()[0])
     smallIdeal = (smallRing*I.subs({R.0:1}))
-    print smallIdeal,'<'+'-'*10
     v = smallIdeal.variety()
     if v==[]:v = smallIdeal.variety(CC)
     if v==[]:raise Exception("Initial form system has no solutions!!")
