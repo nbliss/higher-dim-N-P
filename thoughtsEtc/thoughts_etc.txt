@@ -1,5 +1,13 @@
 Weird stuff:
 
+4d example of ray failing:
+(-12/5*x^3 - 8/17*x^2*y + 1/558*x^2 + x + y, 4*x^3 + 3*x^2*y - x^2*w + x^2 + x + 2*y, 1/2*x*z - 1/3*w^2 + 3*x + 1/6*w)
+
+
+
+
+
+
 Cone: 
 [2 1 1]
 [0 0 1]
@@ -71,3 +79,19 @@ What if initial form system has 0 as solutions in a component? I.e. one of the e
 
 
 Prop: for n-1 polynomials in n unknowns, the 1-skeleton of the tropical prevariety is the tropical variety for generic choices of the coefficients of the polynomials.
+
+----------------------------------------------------------------------
+
+For generic coefficients, in_v(I) = <in_v(f1),...,in_v(fn-1)> if v is in the prevariety 1-skeleton, but not otherwise.
+
+Or not. What?
+
+
+What I really think: for generic coefficients, the initial form system generates the initial ideal wrt. rays in the prevariety, and not otherwise.
+              *************** FALSE!!!! ***************
+Counterexample: (w^2 + 14*x + 19*y, z^3 + 5*x + 11*y, z^2*w^2 + 18*x + 15*y)
+Has (1,1,1,1) in prevariety. Its initial form system has only x,y. But the ideal contains the polynomial 123*w^2 - 132*z^3, which has initial term 123*w^2. This works for generic coeffs since we should almost always be able to cancel out the x’s and y’s to get a*w^2 + b*z^3.
+
+
+Dimension can be generically >1:
+(-x*z - y*z - 2*z^2 + 7*x*w + 11*z*w, -2*x*y*z + 2*x*z^2 + 5*x*w^2 - 1/7*y*w, -16*y^3*z - 9*y*z^2*w - 1/5*x*z*w)
