@@ -43,8 +43,7 @@ def findTropVar(J):
     Uses gfan. Potentially really slow.
     """
     F = J.groebner_fan().tropical_basis()
-    J = R*F
-    return J.groebner_fan().tropical_intersection()
+    return (J.ring()*F).groebner_fan().tropical_intersection()
 
 def compareCones(n):
     sys.stdout.flush()
