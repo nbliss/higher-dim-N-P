@@ -19,6 +19,7 @@ def changeVariables(R,mat):
     Given a matrix mat (from a UCT), constructs
     a dictionary giving the change-of-variables
     associated with mat.
+    DEPRECATED: use uctSub instead
     """
     subDict = {}
     for i in xrange(len(mat.columns())):
@@ -60,6 +61,14 @@ def positivize(mat):
         else:oneMatrix.set_row_to_multiple_of_row(i,i,0)
     return mat+oneMatrix
  
+def support(I):
+    """
+    Return a list of support sets
+    """
+    toReturn = []
+    for p in I.gens():
+        toReturn.append(map(lambda a:list(a),p.exponents(as_ETuples=False)))
+    return toReturn
 
 """
 load("tropicalBasisStuff.sage")
