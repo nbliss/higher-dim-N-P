@@ -1,13 +1,5 @@
 Weird stuff:
 
-4d example of ray failing:
-(-12/5*x^3 - 8/17*x^2*y + 1/558*x^2 + x + y, 4*x^3 + 3*x^2*y - x^2*w + x^2 + x + 2*y, 1/2*x*z - 1/3*w^2 + 3*x + 1/6*w)
-
-
-
-
-
-
 Cone: 
 [2 1 1]
 [0 0 1]
