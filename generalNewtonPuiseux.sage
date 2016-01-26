@@ -70,7 +70,7 @@ def getCoeffs(I):
     smallRing = R.remove_var(R.gens()[0])
     smallIdeal = (smallRing*I.subs({R.0:1}))
     v = smallIdeal.variety()
-    if v==[]:v = smallIdeal.variety(CC)
+    if v==[]:v = smallIdeal.variety(QQbar)
     if v==[]:raise Exception("Initial form system has no solutions!!")
     newRing = v[0].keys()[0].parent()
     toReturn = []
@@ -95,7 +95,9 @@ def npSubstitution(I,exps,coeffs):
         thisGen = R.gens()[i]
         subDict[thisGen] = (R.0)^exps[i]*(coeffs[i]+thisGen)
     subDict[R.0] = coeffs[0]*(R.0)^exps[0]
-    subbedIdeal = I.subs(subDict)
+    #subbedIdeal = I.subs(subDict)
+    subbedIdeal = [f.subs(subDict).numerator() for f in I.gens()]
+    subbedIdeal = subbedIdeal[0].parent()*subbedIdeal
     return subbedIdeal
 
 #-----------------------------------------------------------------------#
@@ -141,10 +143,10 @@ def getInput(s,myType):
 
 #-----------------------------------------------------------------------#
 # takes an ideal I
-def performStep(I,SOLUTION):
+def performStep(I,SOLUTION,showHigherCones=False):
     R = I.ring()
     print '-'*44
-    print I
+    if I.base_ring()==QQbar:return I
     """
     print "Linear portion:"
     for p in I.gens():
@@ -157,8 +159,17 @@ def performStep(I,SOLUTION):
         print 'Done!'
         return SOLUTION
     """
-    inForms = getInitialForms(I)
+    try:
+        f = file("/tmp/"+str(I)[:150],'r')
+        inForms = loads(f.read())
+        f.close()
+    except Exception:
+        inForms = getInitialForms(I)
+        f = file("/tmp/"+str(I)[:150],'w')
+        f.write(dumps(inForms))
+        f.close()
     oldInForms = [f for f in inForms]
+    if not showHigherCones:inForms = filter(lambda f:len(list(f.rays()))==1,inForms)
     if SOLUTION.seriesTuple()==[]: #only want positive x exps for the first term
         def xPos(form):
             for ray in list(form.rays()):
@@ -230,7 +241,8 @@ def performStep(I,SOLUTION):
 #-----------------------------------------------------------------------#
 def newtonPuiseux(I):
     print 'Type \'q\' at any prompt to quit'
+    showHigherCones = (getInput('Show higher cone options? (y/anything else) ',str) == 'y')
     SOLUTION = pSeriesTuple()
-    return performStep(I,SOLUTION)
+    return performStep(I,SOLUTION,showHigherCones)
 
 #-----------------------------------------------------------------------#
