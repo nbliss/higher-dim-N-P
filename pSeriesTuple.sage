@@ -42,5 +42,5 @@ class pSeriesTuple(object):
                 thisExp = self.exps[termNum][variableNum]
                 toReturn[variableNum] += thisCoeff * t ** thisExp
         return toReturn
-    def __repr__(self):return "Puiseux series tuple given by: "+str(self.seriesTuple())
+    def __repr__(self):return "Tuple "+str(self.seriesTuple())+" of Puiseux series"
     def __str__(self):return self.__repr__()
