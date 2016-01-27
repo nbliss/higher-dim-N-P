@@ -53,8 +53,9 @@ def getInitialForms(I):
 
     polys = I.gens()
     qq_ring = I.ring().change_ring(base_ring = QQ)
-    qq_ideal = qq_ring*[p.map_coefficients(lambda a:1,new_base_ring=QQ) for p in polys]
-
+    qq_ideal = [polys[i].map_coefficients(lambda a:i+1,new_base_ring=QQ) for i in xrange(len(polys))]
+    #qq_ideal = qq_ring*[p.map_coefficients(lambda a:1,new_base_ring=QQ) for p in polys]
+    qq_ideal = qq_ring*qq_ideal
     F = qq_ideal.groebner_fan().tropical_intersection()
     forms = F.initial_form_systems()
     origForms = []
@@ -66,4 +67,3 @@ def getInitialForms(I):
             origForm.append(R({k:origPolyDict[k] for k in d.keys()}))
         origForms.append(inFormWrapper(origForm,0-matrix(form.rays()),form.initial_forms()))
     return origForms
-
