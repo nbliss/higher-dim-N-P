@@ -1,3 +1,9 @@
+def tryit(n):
+    I = badPrevar(n)
+    start_time = time()
+    I.groebner_fan().tropical_basis()
+    return time()-start_time
+
 Weird stuff:
 
 Cone: 
