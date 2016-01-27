@@ -145,8 +145,8 @@ def getInput(s,myType):
 # takes an ideal I
 def performStep(I,SOLUTION,showHigherCones=False):
     R = I.ring()
+    #print initialGeneratorIdeal(I,[1,2,1])
     print '-'*44
-    if I.base_ring()==QQbar:return I
     """
     print "Linear portion:"
     for p in I.gens():
@@ -165,7 +165,7 @@ def performStep(I,SOLUTION,showHigherCones=False):
         f.close()
     except Exception:
         inForms = getInitialForms(I)
-        f = file("/tmp/"+str(I)[:150],'w')
+        f = file("/tmp/"+str(I)[:151].replace('/','#'),"w")
         f.write(dumps(inForms))
         f.close()
     oldInForms = [f for f in inForms]
