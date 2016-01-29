@@ -236,7 +236,7 @@ def performStep(I,SOLUTION,showHigherCones=False):
             print pt
         c = c[getInput("Choose coeff by giving i--> ",int)]
     SOLUTION.addTerm(c,v)
-    print SOLUTION
+    #print SOLUTION
     if getInput("Type y if done: ",str)=='y':return SOLUTION
     #################################################################
     ###   Need to check if one of the series is finished!!!!!!!   ###
