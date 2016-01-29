@@ -96,7 +96,13 @@ def npSubstitution(I,exps,coeffs):
         subDict[thisGen] = (R.0)^exps[i]*(coeffs[i]+thisGen)
     subDict[R.0] = coeffs[0]*(R.0)^exps[0]
     #subbedIdeal = I.subs(subDict)
-    subbedIdeal = [f.subs(subDict).numerator() for f in I.gens()]
+    subbedIdeal = []
+    for f in I.gens():
+        toAppend = f.subs(subDict)
+        if f.parent().is_field():
+            toAppend = toAppend.numerator()
+        subbedIdeal.append(toAppend)
+    #subbedIdeal = [f.subs(subDict).numerator() for f in I.gens()]
     subbedIdeal = subbedIdeal[0].parent()*subbedIdeal
     return subbedIdeal
 
