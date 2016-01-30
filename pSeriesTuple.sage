@@ -6,13 +6,13 @@ class pSeriesTuple(object):
         self.numVars = 0
 
     def addTerm(self,coeffs,exps):
-        self.coeffs.append(coeffs)
-        if type(exps)!=list:exps = exps.list()
+        self.coeffs.append([c for c in coeffs])
+        if type(exps)!=list:exps = list(exps)
         if self.exps==[]:
-            self.exps.append(exps)
+            self.exps.append([e for e in exps])
             self.numVars = len(coeffs)
             return
-        toAdd = exps
+        toAdd = [e for e in exps]
         for i in xrange(self.numVars):
             if i==self.expander_index: continue
             else: toAdd[i] += self.exps[-1][i]
