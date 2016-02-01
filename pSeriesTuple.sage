@@ -7,7 +7,8 @@ class pSeriesTuple(object):
 
     def addTerm(self,coeffs,exps):
         self.coeffs.append([c for c in coeffs])
-        if type(exps)!=list:exps = list(exps)
+        if type(exps)!=list:
+            exps = list(exps[0])
         if self.exps==[]:
             self.exps.append([e for e in exps])
             self.numVars = len(coeffs)
