@@ -95,8 +95,11 @@ def initialIdeal(I,v):
     Fails if v has any negative entries.
     """
     R = PolynomialRing(I.base_ring(), I.ring().variable_names(), order=TermOrder('negwdegrevlex',v))
-    return I.ring()*initialGeneratorIdeal(R*(R*I).groebner_basis(),v)
+    gb=R*(R*I).groebner_basis()
+    return gb
+    return I.ring()*initialGeneratorIdeal(gb,v)
     """
+    # Trying to do negative powers, but didn't really work
     if reduce(lambda a,b:a and b>0,v,True) or reduce(lambda a,b:a or b<0,v,False):
         R = PolynomialRing(I.base_ring(), I.ring().variable_names(), order=TermOrder('negwdegrevlex',v))
         return I.ring()*initialGeneratorIdeal(R*(R*I).groebner_basis(),v)
