@@ -9,6 +9,18 @@ def projectedRays(I,n):
     projI = R.remove_var(nthvar)*I.elimination_ideal(nthvar)
     return projI.groebner_fan().tropical_intersection().rays()
 
+def unitCoeffs(I):
+    """
+    Returns an ideal w/ coeffs all =1. Sometimes easier to
+    read.
+    """
+    R = I.ring()
+    d_i = []
+    for p in I.gens():
+        d_i.append({a:1 for a in p.dict().keys()})
+    return R*d_i
+    
+
 def randomCoeffs(I,height_bound=300):
     """
     Returns an ideal w/ same generators as I but random
