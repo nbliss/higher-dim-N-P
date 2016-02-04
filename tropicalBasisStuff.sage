@@ -14,6 +14,7 @@ def randomCoeffs(I,height_bound=300):
     Returns an ideal w/ same generators as I but random
     coefficients.
     """
+    R = I.ring()
     d_i = []
     for p in I.gens():
         d_i.append({a:myRandomQQ() for a in p.dict().keys()})
