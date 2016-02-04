@@ -43,6 +43,12 @@ class pSeriesTuple(object):
                 thisExp = self.exps[termNum][variableNum]
                 toReturn[variableNum] += thisCoeff * t ** thisExp
         return toReturn
+    def __eq__(self,other):
+        if type(other)!=pSeriesTuple or self.numVars != other.numVars:
+            return False
+        for i in xrange(self.numVars):
+            if self.seriesTuple()[i]!=other.seriesTuple()[i]:return False
+        return True
     def __repr__(self):
         tup = self.seriesTuple()
         baseRing = max([coeff.base_ring() for coeff in self.coeffs[-1]])
