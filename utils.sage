@@ -89,17 +89,45 @@ def randomInitials():
                 sys.stdout.flush()
 
 
-def initialIdeal(I,v):
+def initialIdeal(I,v,useGfan = True):
     """
     Computes the initial ideal of I wrt v.
     Fails if v has any negative entries.
     """
-    R = PolynomialRing(I.base_ring(), I.ring().variable_names(), order=TermOrder('negwdegrevlex',v))
-    gb=R*(R*I).groebner_basis()
-    return gb
-    return I.ring()*initialGeneratorIdeal(gb,v)
-    """
+    if not useGfan:
+        # Good chance this is wrong!!!!!!
+        print 'Good chance this is wrong!!!!!!'
+        R = PolynomialRing(I.base_ring(), I.ring().variable_names(), order=TermOrder('negwdegrevlex',v))
+        gb=R*(R*I).groebner_basis()
+        return gb
+        return I.ring()*initialGeneratorIdeal(gb,v)
+
+    # -----Gfan try------ #
+    R = I.ring()
+    filestring = "Q["+reduce(lambda a,b:a+','+b,R.variable_names())+']\n'
+    filestring+='{' + str(I.gens())[1:-1] + '}\n'
+    if type(v) not in [list,tuple]:v = list(v[0])
+    filestring+='\n'+str(v)
+    print filestring
+    inputfile = '/tmp/myfile'
+    outputfile = '/tmp/gfanOut'
+    f = open(inputfile,'w')
+    f.write(filestring)
+    f.close()
+    os.system('/Applications/gfan_files/gfan_initialforms --ideal < '+ inputfile+' > '+outputfile)
+    g = open('/tmp/gfanOut')
+    toReturn = g.read()
+    print toReturn
+    g.close()
+    os.remove(inputfile)
+    os.remove(outputfile)
+    toReturn = toReturn.split('{')[1][:-2].split(',')
+    toReturn = R*[R(poly[1:]) for poly in toReturn]
+    return toReturn
+
+    # -----Second try------ #
     # Trying to do negative powers, but didn't really work
+    """
     if reduce(lambda a,b:a and b>0,v,True) or reduce(lambda a,b:a or b<0,v,False):
         R = PolynomialRing(I.base_ring(), I.ring().variable_names(), order=TermOrder('negwdegrevlex',v))
         return I.ring()*initialGeneratorIdeal(R*(R*I).groebner_basis(),v)
