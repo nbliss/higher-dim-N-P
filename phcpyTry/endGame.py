@@ -22,11 +22,12 @@ def performEndGame(polys,expandVar = 'x1'):
     #from phcpy.solver import random_coefficient_system as rcs
     from phcpy.tuning import order_endgame_extrapolator_set as setOrder
     setOrder(8)
-    from phcpy.trackers import standard_double_track as track
-    #from phcpy.trackers import double_double_track as track
+    #from phcpy.trackers import standard_double_track as track
+    from phcpy.trackers import double_double_track as track
     #from phcpy.trackers import track
     sols = track(f, g, gsols)
-    from phcpy.tropisms import standard_retrieve as retrieve
+    #from phcpy.tropisms import standard_retrieve as retrieve
+    from phcpy.tropisms import dobldobl_retrieve as retrieve
     (w, d, e) = retrieve(len(sols), len(f))
     #return (w,d,e)
     print e
