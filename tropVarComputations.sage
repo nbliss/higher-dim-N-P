@@ -1,7 +1,7 @@
 """
 Functions for computing tropical stuff.
-Mostly from Computing Tropical Varieties,
-or using gfan.
+Mostly consists of algorithms taken from Computing Tropical
+Varieties, or code that calls gfan.
 """
 def monInIdeal(I):
     """
@@ -16,35 +16,59 @@ def monInIdeal(I):
     while m not in I: m *= varProd
     return m
 
-def OTHERcutDownCone(I,vects):
+def cutDownCone(I,vects):
     """
     For a cone (list of lists) "vects" that SHOULD
     be in the prevariety, returns 0 if that cone is
     in the variety or 'p' such that I+<p> doesn't contain
     the cone "vects" in its tropical intersection.
     """
-    if type(vects[0])==list:
-        if len(vects)>1:
-            innerRay = list(sum([randint(1,1000)*vector(v) for v in vects]))
-        else:innerRay = vects[0]
-    else:innerRay = vects
-    maxy = max(innerRay)+1
-    innerRay = [maxy-i for i in innerRay]+[maxy]
-    print innerRay
+    innerRay = getRay(vects)
     I = I.homogenize()
     R = I.ring()
     #weightedR = PolynomialRing(R.base_ring(), R.variable_names(), order=TermOrder('negwdegrevlex',innerRay))
     weightedR = PolynomialRing(R.base_ring(), R.variable_names(), order=TermOrder('wdeglex',innerRay))
     weightedI = weightedR*I
     xm = monInIdeal(initialIdeal(I,innerRay))
+    print initialIdeal(I,innerRay)
     if xm==0:return 0
     f = xm - weightedI.reduce(xm)
     f = f.subs({R.gens()[-1]:1})
     #assert f in I
     return f
 
+def getRay(vects):
+    if type(vects[0])==list:
+        if len(vects)>1:
+            innerRay = list(sum([randint(1,1000)*vector(v) for v in vects]))
+        else:innerRay = vects[0]
+    else:innerRay = vects
+    print innerRay,'-'*20
+    maxy = max(innerRay)+1
+    innerRay = [maxy-i for i in innerRay]+[maxy]
+    print innerRay
+    return innerRay
 
-def cutDownCone(I,vects):
+    newVects = []
+    for v in vects:
+        maxy = max(v)+1
+        newVects.append([maxy-i for i in v]+[maxy])
+    vects = newVects
+    #print vects
+    if type(vects[0])==list:
+        if len(vects)>1:
+            innerRay = list(sum([randint(1,1000)*vector(v) for v in vects]))
+        else:innerRay = vects[0]
+    else:innerRay = vects
+    #maxy = max(innerRay)+1
+    #innerRay = [maxy-i for i in innerRay]+[maxy]
+    print innerRay
+    return innerRay
+
+
+
+
+def OTHERcutDownCone(I,vects):
     """
     For a cone (list of lists) "vects" that SHOULD
     be in the prevariety, returns 0 if that cone is
@@ -134,6 +158,9 @@ def initialIdeal(I,v,useGfan = True):
         gb = (R*[R(a._repr_()) for a in I.gens()]).groebner_basis('toy:buchberger')
         return initialGeneratorIdeal(R*gb,v)
     """
+
+def getPrevar(I):
+    return I.groebner_fan().tropical_intersection()
 
 def initialForm(p,v):
     """
