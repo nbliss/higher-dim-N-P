@@ -37,6 +37,7 @@ def cutDownCone(I,vects):
     #assert f in I
     return f
 
+
 def getRay(vects):
     if type(vects[0])==list:
         if len(vects)>1:
