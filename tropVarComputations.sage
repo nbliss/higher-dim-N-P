@@ -3,6 +3,21 @@ Functions for computing tropical stuff.
 Mostly consists of algorithms taken from Computing Tropical
 Varieties, or code that calls gfan.
 """
+
+def mCutDownCone(I,vects):
+    """
+    Interfaces to macaulay2 to compute a witness
+    that rules out vects from the tropical prevariety,
+    if one exists.
+    """
+    R = I.ring()
+    macaulay2('QQ['+','.join(R.variable_names())+']')
+    macaulay2('load "mCutDownCones.m2"')
+    macaulay2('I = ideal('+str(I.gens())[1:-1]+')')
+    vectString = str(vects).replace('[','{').replace(']','}')
+    returned = macaulay2("cutDownCone(I,"+vectString+")")
+    return returned.to_sage()
+
 def monInIdeal(I):
     """
     Returns a monomial, if one exists, in I,
@@ -23,32 +38,40 @@ def cutDownCone(I,vects):
     in the variety or 'p' such that I+<p> doesn't contain
     the cone "vects" in its tropical intersection.
     """
-    innerRay = getRay(vects)
+    innerRay,otherguy = getRay(vects,I)
+    #print innerRay
     I = I.homogenize()
     R = I.ring()
     #weightedR = PolynomialRing(R.base_ring(), R.variable_names(), order=TermOrder('negwdegrevlex',innerRay))
     weightedR = PolynomialRing(R.base_ring(), R.variable_names(), order=TermOrder('wdeglex',innerRay))
     weightedI = weightedR*I
     xm = monInIdeal(initialIdeal(I,innerRay))
-    print initialIdeal(I,innerRay)
+    #print innerRay
+    #print initialIdeal(I,innerRay)
     if xm==0:return 0
     f = xm - weightedI.reduce(xm)
     f = f.subs({R.gens()[-1]:1})
     #assert f in I
-    return f
+    #return f,otherguy[:2]
+    return f#,xm
 
 
-def getRay(vects):
+def getRay(vects,I):
     if type(vects[0])==list:
         if len(vects)>1:
             innerRay = list(sum([randint(1,1000)*vector(v) for v in vects]))
         else:innerRay = vects[0]
     else:innerRay = vects
-    print innerRay,'-'*20
+    #print initialIdeal(I,innerRay)
+    oldy = [i for i in innerRay]
+    #innerRay = [1,3,1,1]
+    #print innerRay,'-'*20
     maxy = max(innerRay)+1
     innerRay = [maxy-i for i in innerRay]+[maxy]
-    print innerRay
-    return innerRay
+    #print initialIdeal(I.homogenize(),innerRay).subs({4:1})
+    #return [841, 1, 841, 841, 975], oldy
+    #return [2,1,2,2,3],oldy
+    return innerRay,oldy
 
     newVects = []
     for v in vects:
@@ -65,8 +88,6 @@ def getRay(vects):
     #innerRay = [maxy-i for i in innerRay]+[maxy]
     print innerRay
     return innerRay
-
-
 
 
 def OTHERcutDownCone(I,vects):
@@ -165,7 +186,7 @@ def getPrevar(I):
 
 def initialForm(p,v):
     """
-    Compute the initial form of p wrt v
+    Computes the initial form of p wrt v
     """
     v = vector(v)
     d = p.dict()
