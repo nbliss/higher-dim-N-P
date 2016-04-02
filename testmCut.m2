@@ -8,7 +8,7 @@ badPrevar = n -> (
     );
     return ideal polyList;
 );
-for n from 3 to 5 do (
+for n from 3 to 12 do (
     vects = {for i from 1 to n list 1,{1}|for i from 2 to n list 0};
     I = badPrevar n;
     print n;
