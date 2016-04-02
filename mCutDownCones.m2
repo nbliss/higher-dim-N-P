@@ -17,11 +17,9 @@ getRay = vects -> (
 );
 cutDownCone = (I,vects) -> (
     innerRay := getRay(vects);
-    print innerRay;
     weightedR = newRing(ring I,Variables => flatten({h,gens ring I}),MonomialOrder=>{Weights=>innerRay},Global=>true);
     Ihomog := homogenize(substitute(I,weightedR),weightedR_0);
     xm := monInIdeal(initialIdeal(innerRay,Ihomog));
-    print xm;
     if xm==0 then return 0;
     moddy := (xm % Ihomog);
     f := xm - moddy;
