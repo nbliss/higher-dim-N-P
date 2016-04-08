@@ -8,11 +8,13 @@ badPrevar = n -> (
     );
     return ideal polyList;
 );
-for n from 3 to 12 do (
-    vects = {for i from 1 to n list 1,{1}|for i from 2 to n list 0};
+vects = n -> (
+    return {for i in 1..n list 1,{1}|for i in 2..n list 0};
+);
+test = n -> (
     I = badPrevar n;
-    print n;
+    thisCone = vects(n);
     for i from 1 to 3 do (
-        time cutDownCone(I,vects);
+        time cutDownCone(I,thisCone);
     );
 );
