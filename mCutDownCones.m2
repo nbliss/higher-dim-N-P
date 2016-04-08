@@ -1,4 +1,4 @@
-needsPackage "gfanInterface";
+--needsPackage "gfanInterface";
 getRay = vects -> (
     randScale := l -> random(1,1000)*l;
     innerRay := sum apply(vects,randScale);
