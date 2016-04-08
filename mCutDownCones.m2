@@ -1,13 +1,4 @@
 --needsPackage "gfanInterface";
-getRay = vects -> (
-    randScale := l -> random(1,1000)*l;
-    innerRay := sum apply(vects,randScale);
-    innerRay = {0}|innerRay;
-    maxy := max(innerRay) + 1;
-    --innerRay = append(innerRay,0);
-    innerRay = for i in innerRay list maxy-i;
-    return innerRay;
-);
 innerProd = (v,w) -> (
     return sum(for i from 0 to (#v-1) list v_i*w_i);
 );
@@ -26,10 +17,19 @@ initialForm = (f,w) -> (
     );
     return sum maxList;
 );
+getRay = vects -> (
+    randScale := l -> random(1,1000)*l;
+    innerRay := sum apply(vects,randScale);
+    innerRay = {0}|innerRay;
+    maxy := max(innerRay) + 1;
+    --innerRay = append(innerRay,0);
+    innerRay = for i in innerRay list maxy-i;
+    return innerRay;
+);
 monInIdeal = I -> (
     m := fold((a,b)->a*b,1,gens ring I);
     varProd := m;
-    if saturate(I,m) != 1 then return false;
+    if saturate(I,m) != 1 then return 0;
     while m % I != 0 do (m = m*varProd);
     return m;
 );
