@@ -33,7 +33,7 @@ monInIdeal = I -> (
     while m % I != 0 do (m = m*varProd);
     return m;
 );
-improvedcutDownCone = (I,vects) -> (
+cutDownCone = (I,vects) -> (
     innerRay := getRay(vects);
     weightedR = newRing(ring I,Variables => flatten({h,gens ring I}),MonomialOrder=>{Weights=>innerRay});
     Ihomog := homogenize(substitute(I,weightedR),weightedR_0);
