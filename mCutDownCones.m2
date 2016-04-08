@@ -1,11 +1,4 @@
 needsPackage "gfanInterface";
-monInIdeal = I -> (
-    m := fold((a,b)->a*b,1,gens ring I);
-    varProd := m;
-    if saturate(I,m) != 1 then return false;
-    while m % I != 0 do (m = m*varProd);
-    return m;
-);
 getRay = vects -> (
     randScale := l -> random(1,1000)*l;
     innerRay := sum apply(vects,randScale);
@@ -15,11 +8,41 @@ getRay = vects -> (
     innerRay = for i in innerRay list maxy-i;
     return innerRay;
 );
-cutDownCone = (I,vects) -> (
+innerProd = (v,w) -> (
+    return sum(for i from 0 to (#v-1) list v_i*w_i);
+);
+initialForm = (f,w) -> (
+    fTerms := terms f;
+    exps := for t in fTerms list (exponents t)_0;
+    maxVal := innerProd(w,exps_0);
+    maxList := {fTerms_0};
+    for i from 1 to (#exps-1) do (
+        prodVal := innerProd(exps_i,w);
+        if prodVal > maxVal then (
+            maxVal = prodVal;
+            maxList = {fTerms_i};
+        )
+        else if prodVal == maxVal then maxList = append(maxList,fTerms_i);
+    );
+    return sum maxList;
+);
+monInIdeal = I -> (
+    m := fold((a,b)->a*b,1,gens ring I);
+    varProd := m;
+    if saturate(I,m) != 1 then return false;
+    while m % I != 0 do (m = m*varProd);
+    return m;
+);
+improvedcutDownCone = (I,vects) -> (
     innerRay := getRay(vects);
-    weightedR = newRing(ring I,Variables => flatten({h,gens ring I}),MonomialOrder=>{Weights=>innerRay},Global=>true);
+    weightedR = newRing(ring I,Variables => flatten({h,gens ring I}),MonomialOrder=>{Weights=>innerRay});
     Ihomog := homogenize(substitute(I,weightedR),weightedR_0);
-    xm := monInIdeal(initialIdeal(innerRay,Ihomog));
+    --IhomogList := first entries gens gb Ihomog;
+    --Ihomog = ideal IhomogList;
+    --initialIhomog := ideal(for elt in IhomogList list initialForm(elt,innerRay));
+    initialIhomog = ideal leadTerm(1,Ihomog);
+    xm := monInIdeal(initialIhomog);
+    --xm := monInIdeal(initialIdeal(innerRay,Ihomog));
     if xm==0 then return 0;
     moddy := (xm % Ihomog);
     f := xm - moddy;
