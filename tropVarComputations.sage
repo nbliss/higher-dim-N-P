@@ -44,7 +44,7 @@ def mTropBasis(I,dim=None):
             p = mCutDownCone(I,rays)
             if p!=0:
                 polys.append(p)
-    if dim!=None:cutDimN(dim)
+    if dim!=None and dim<=F.dim():cutDimN(dim)
     else:
         for i in xrange(1,F.dim()+1): cutDimN(i)
     return I if polys==[] else I+polys
