@@ -35,14 +35,11 @@ monInIdeal = I -> (
 );
 cutDownCone = (I,vects) -> (
     innerRay := getRay(vects);
-    weightedR = newRing(ring I,Variables => flatten({h,gens ring I}),MonomialOrder=>{Weights=>innerRay});
+    varList := flatten({h,gens ring I});
+    weightedR = newRing(ring I,Variables => varList,MonomialOrder=>{Weights=>innerRay});
     Ihomog := homogenize(substitute(I,weightedR),weightedR_0);
-    --IhomogList := first entries gens gb Ihomog;
-    --Ihomog = ideal IhomogList;
-    --initialIhomog := ideal(for elt in IhomogList list initialForm(elt,innerRay));
     initialIhomog = ideal leadTerm(1,Ihomog);
     xm := monInIdeal(initialIhomog);
-    --xm := monInIdeal(initialIdeal(innerRay,Ihomog));
     if xm==0 then return 0;
     moddy := (xm % Ihomog);
     f := xm - moddy;
