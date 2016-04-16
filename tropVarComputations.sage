@@ -3,6 +3,18 @@ Functions for computing tropical stuff.
 Mostly consists of algorithms taken from Computing Tropical
 Varieties, or code that calls gfan.
 """
+load("tropicalBasisStuff.sage")
+load("badPrevars.sage")
+
+def cutDimNCones(I,n):
+    F = I.groebner_fan().tropical_intersection()
+    cones = F.cones()[n]
+    rays = F.rays()
+    polys = []
+    for cone in cones:
+        polys.append(mCutDownCone(I,[[-i for i in rays[r]] for r in cone]))
+    return polys
+
 
 def mCutDownCone(I,vects):
     """
@@ -17,6 +29,26 @@ def mCutDownCone(I,vects):
     vectString = str(vects).replace('[','{').replace(']','}')
     returned = macaulay2("cutDownCone(I,"+vectString+")")
     return returned.to_sage()
+
+def mTropBasis(I,dim=None):
+    """
+    dim is an int. If given, we only cut down
+    cones of that dimension.
+    """
+    F = getPrevar(I)
+    polys = []
+    def cutDimN(i):
+        for cone in F.cones()[i]:
+            rays = [F.rays()[j] for j in cone]
+            rays = [[-a for a in v] for v in rays]
+            p = mCutDownCone(I,rays)
+            if p!=0:polys.append(p)
+    if dim!=None:cutDimN(dim)
+    else:
+        for i in xrange(1,F.dim()+1): cutDimN(i)
+    return I+polys
+
+def mTropVar(I):return getPrevar(mTropBasis(I))
 
 def monInIdeal(I):
     """
