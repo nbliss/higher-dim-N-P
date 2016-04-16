@@ -42,11 +42,13 @@ def mTropBasis(I,dim=None):
             rays = [F.rays()[j] for j in cone]
             rays = [[-a for a in v] for v in rays]
             p = mCutDownCone(I,rays)
-            if p!=0:polys.append(p)
+            if p!=0:
+                print p
+                polys.append(p)
     if dim!=None:cutDimN(dim)
     else:
         for i in xrange(1,F.dim()+1): cutDimN(i)
-    return I+polys
+    return I if polys==[] else I+polys
 
 def mTropVar(I):return getPrevar(mTropBasis(I))
 
