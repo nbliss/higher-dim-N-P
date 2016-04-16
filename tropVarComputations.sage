@@ -43,7 +43,6 @@ def mTropBasis(I,dim=None):
             rays = [[-a for a in v] for v in rays]
             p = mCutDownCone(I,rays)
             if p!=0:
-                print p
                 polys.append(p)
     if dim!=None:cutDimN(dim)
     else:
