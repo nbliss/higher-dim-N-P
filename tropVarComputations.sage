@@ -6,16 +6,6 @@ Varieties, or code that calls gfan.
 load("tropicalBasisStuff.sage")
 load("badPrevars.sage")
 
-def cutDimNCones(I,n):
-    F = I.groebner_fan().tropical_intersection()
-    cones = F.cones()[n]
-    rays = F.rays()
-    polys = []
-    for cone in cones:
-        polys.append(mCutDownCone(I,[[-i for i in rays[r]] for r in cone]))
-    return polys
-
-
 def mCutDownCone(I,vects):
     """
     Interfaces to macaulay2 to compute a witness
@@ -40,6 +30,7 @@ def mTropBasis(I,F=None,dim=None):
     def cutDimN(i):
         for cone in F.cones()[i]:
             rays = [F.rays()[j] for j in cone]
+            if rays==[]:return
             rays = [[-a for a in v] for v in rays]
             p = mCutDownCone(I,rays)
             if p!=0:
@@ -49,7 +40,7 @@ def mTropBasis(I,F=None,dim=None):
         for i in xrange(1,F.dim()+1): cutDimN(i)
     return I if polys==[] else I+polys
 
-def mTropVar(I):return getPrevar(mTropBasis(I))
+def mTropVar(I,F=None):return getPrevar(mTropBasis(I,F))
 
 def monInIdeal(I):
     """
