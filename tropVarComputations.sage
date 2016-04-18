@@ -20,7 +20,7 @@ def mCutDownCone(I,vects):
     returned = macaulay2("cutDownCone(I,"+vectString+")")
     return returned.to_sage()
 
-def mTropBasis(I,F=None,dim=None):
+def mTropBasis(I,prevar=None,dim=None):
     """
     dim is an int. If given, we only cut down
     cones of that dimension.
@@ -40,7 +40,7 @@ def mTropBasis(I,F=None,dim=None):
         for i in xrange(1,F.dim()+1): cutDimN(i)
     return I if polys==[] else I+polys
 
-def mTropVar(I,F=None):return getPrevar(mTropBasis(I,F))
+def mTropVar(I,prevar=None):return getPrevar(mTropBasis(I,prevar))
 
 def monInIdeal(I):
     """
