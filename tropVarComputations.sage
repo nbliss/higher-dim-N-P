@@ -25,19 +25,19 @@ def mTropBasis(I,prevar=None,dim=None):
     dim is an int. If given, we only cut down
     cones of that dimension.
     """
-    if F==None:F = getPrevar(I)
+    if prevar==None:prevar = getPrevar(I)
     polys = []
     def cutDimN(i):
-        for cone in F.cones()[i]:
-            rays = [F.rays()[j] for j in cone]
+        for cone in prevar.cones()[i]:
+            rays = [prevar.rays()[j] for j in cone]
             if rays==[]:return
             rays = [[-a for a in v] for v in rays]
             p = mCutDownCone(I,rays)
             if p!=0:
                 polys.append(p)
-    if dim!=None and dim<=F.dim():cutDimN(dim)
+    if dim!=None and dim<=prevar.dim():cutDimN(dim)
     else:
-        for i in xrange(1,F.dim()+1): cutDimN(i)
+        for i in xrange(1,prevar.dim()+1): cutDimN(i)
     return I if polys==[] else I+polys
 
 def mTropVar(I,prevar=None):return getPrevar(mTropBasis(I,prevar))
