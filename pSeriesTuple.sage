@@ -51,7 +51,9 @@ class pSeriesTuple(object):
         return True
     def __repr__(self):
         tup = self.seriesTuple()
-        baseRing = max([coeff.base_ring() for coeff in self.coeffs[-1]])
-        myRing = PowerSeriesRing(baseRing,'t')
+        #baseRing = max([coeff.base_ring() for coeff in self.coeffs[-1]])
+        #myRing = PowerSeriesRing(baseRing,'t')
+        myRing = PowerSeriesRing(QQbar,'t')
         return "Tuple "+str([myRing(elt) for elt in tup])+" of Puiseux series"
     def __str__(self):return self.__repr__()
+    def __call__(self,value):return map(lambda a:a(value),self.seriesTuple())
