@@ -6,7 +6,7 @@ initialForm = (f,w) -> (
     fTerms := terms f;
     exps := for t in fTerms list (exponents t)_0;
     maxVal := innerProd(w,exps_0);
-    maxList := {fTerms_0};
+    maxList := new MutableList from {fTerms_0};
     for i from 1 to (#exps-1) do (
         prodVal := innerProd(exps_i,w);
         if prodVal > maxVal then (
