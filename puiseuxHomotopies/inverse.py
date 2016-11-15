@@ -1,0 +1,38 @@
+"""
+Uses numpy to compute the inverse of a truncated
+matrix series with a blocked least squares.
+"""
+import numpy as np
+from numpy.linalg import lstsq
+A0 = np.array([[0, 4], [0, 0]])
+A1 = np.array([[4, 0], [4, 0]])
+Z = np.array([[0, 0], [0, 0]])
+I = np.array([[1, 0], [0, 1]])
+print('A0 =')
+print(A0)
+print('A1 =')
+print(A1)
+C1 = np.concatenate([A0, Z], axis=1)
+C2 = np.concatenate([A1, A0], axis=1)
+C3 = np.concatenate([Z, A1], axis=1)
+A = np.concatenate([C1, C2, C3], axis=0)
+print('coefficient matrix A = ')
+print(A)
+B = np.concatenate([Z, I, Z], axis=0)
+print('right hand side B = ')
+print(B)
+B0 = np.reshape(B[:,0], (6, 1))
+B1 = np.reshape(B[:,1], (6, 1))
+print('solving with the first column of B, B0 =')
+print(B0)
+(x0, residuals, rank, singvals) = lstsq(A, B0)
+print(x0)
+print('solving with the first column of B, B1 =')
+print(B1)
+(x1, residuals, rank, singvals) = lstsq(A, B1)
+print(x1)
+X = np.concatenate([x0, x1], axis=1)
+print('the solution :')
+print(X)
+print('verification :')
+print(np.matrix(A)*np.matrix(X))
