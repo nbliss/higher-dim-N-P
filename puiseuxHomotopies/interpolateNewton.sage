@@ -41,8 +41,52 @@ def ignoreHeightDot(a,b):
     """ Does 3d matrix mult in horizontal slices """
     return np.dstack([np.matmul(a[i,:,:],b[i,:,:]) for i in xrange(a.shape[0])])
 #------------------------------------------------------------------------------#
-def newtonStep(x0,F,J,termsTarget,recompute=False):
+def newtonStep(x0,F,J,termsTarget):
     """
+    Computes next set of terms (coeffs of series).
+    x0 is an nxk matrix, n=#variables, k=#terms, a guess for the root.
+    F is a list of polynomials.
+    J is the Jacobian of F.
+    termsTarget is the number of terms to attempt to compute. Becomes k.
+        Note: termsTarget shouldn't exceed 2 * #terms(x0), probably?
+    For this one, we're just going to recompute the first k terms.
+    """
+    R = F[0].parent()
+    print "x0:\n",x0
+    k = x0.shape[1] # current number of known terms
+    #ci = np.random.rand(termsTarget,1)
+    # fixed seed for predictability:
+    ci = np.array([[i+0.5] for i in xrange(termsTarget)])
+    print "c_i's:\n",ci
+    # powers will be rows of ci^column#, i.e. rows are ci, columns are term#
+    powers = np.empty((termsTarget,termsTarget))
+    powers[:,:]=ci
+    powers[:,0] = np.array([1 for c in ci])
+    np.multiply.accumulate(powers,axis=1,out=powers)
+    # for each row in x0, take dot products with rows of powers:
+    # rows are ci's, columns are different series components (variables)
+    x0evalled = np.dot(powers[:,:k],np.transpose(x0))
+    for i in xrange(termsTarget):
+        #subDict = {R.gens()[j+1]: x0evalled[i][j] for j in xrange(R.ngens()-1)}
+        subDict = {xi: x0ci for xi,x0ci in zip(R.gens()[1:],x0evalled[i])}
+        subDict[R.0] = ci[i][0] # for first variable, sub just the value
+        Ji = np.array(map(lambda a:a.subs(subDict),J.list()))
+        Ji.shape = (len(subDict)-1,len(subDict)-1)
+        Fi = np.array(map(lambda f:[f.subs(subDict)],F)) #col vector of F@x0@ci
+
+R.<x,y,z> = QQ[]
+I = R*(x+y*z,2*x^2+x*z+y+1)
+F = I.gens()
+x0 = np.array([[-1,0],[0,1]]) # puiseux initial form solution
+#x0 = np.array([[-1,0,-3,0],[0,1,0,-3]]) # "" with one more term found
+asdf = newtonStep(x0,F,jacobian(F,(y,z)),termsTarget=3)
+
+#------------------------------------------------------------------------------#
+def alternateNewtonStep(ci,x0evalled,F,J,termsTarget,recompute=False):
+    """
+    Same as above, except we return x1 evaluated at the ci's plus
+    at new points, coupled with the new list of points with our new ones
+    appended.
     Computes next set of terms (coeffs of series).
     x0 is an nxk matrix, n=#variables, k=#terms, a guess for the root.
     F is a list of polynomials.
@@ -51,22 +95,5 @@ def newtonStep(x0,F,J,termsTarget,recompute=False):
         Note: termsTarget shouldn't exceed #terms(x0), probably?
     recompute is whether we re-interpolate for the coeffs of x0 or just reuse
         them.
-    """
-    k = x0.shape[1] # current number of known terms
-    outputSeriesLength = termsTarget + recompute*k
-    ci = np.random.rand(termsTarget,1)
-    powers = np.empty((outputSeriesLength,outputSeriesLength))
-    powers[:,:]=ci
-    powers[:,0] = np.array([1 for c in ci])
-    np.multiply.accumulate(powers,axis=1,out=powers)
-    x0evalled = x0 * powers[:,:k] # componentwise prod, NOT matrix prod
-newtonStep(np.array([[1,1,1],[1,1,1]]),0,0,termsTarget=3)
-
-#------------------------------------------------------------------------------#
-def alternateNewtonStep(ci,x0evalled,F,J,termsTarget,recompute=False):
-    """
-    Same as above, except we return x1 evaluated at the ci's plus
-    at new points, coupled with the new list of points with our new ones
-    appended.
     """
     pass
