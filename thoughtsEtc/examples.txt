@@ -5,6 +5,8 @@ q = (x-1)^2+y^2-1
 I = (p,q)*R
 sol = newtonPuiseux(I)
 
+
+
 # viviani (shifted so self intersection is at origin)
 R.<x,y,z> = PolynomialRing(QQ,3)
 p = x^2 + y^2 + z^2 + 4*x
@@ -19,6 +21,7 @@ q = y^2-x^2-z
 I = (p,q)*R
 sol = newtonPuiseux(I)
 ##### Doesn’t work! Get 1d initial form at 2nd term!!!!
+## wait what? seems to work for me
 
 # klein quartic
 R.<x,y,z> = QQ[]
