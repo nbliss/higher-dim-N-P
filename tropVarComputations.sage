@@ -3,8 +3,9 @@ Functions for computing tropical stuff.
 Mostly consists of algorithms taken from Computing Tropical
 Varieties, or code that calls gfan.
 """
-load("tropicalBasisStuff.sage")
-load("badPrevars.sage")
+pathStr = '/Users/nathanbliss/Documents/Google Drive/UIC_coursework/Toward a Higher-Dimension/higher-dim-N-P/'
+load(pathStr+"tropicalBasisStuff.sage")
+load(pathStr+"badPrevars.sage")
 
 def mCutDownCone(I,vects):
     """
