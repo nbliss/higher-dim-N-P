@@ -1,6 +1,7 @@
-load("utils.sage")
-load("trop_intersection_wrapper.sage")
-load("pSeriesTuple.sage")
+pathStr = '/Users/nathanbliss/Documents/Google Drive/UIC_coursework/Toward a Higher-Dimension/higher-dim-N-P/'
+load(pathStr+"utils.sage")
+load(pathStr+"trop_intersection_wrapper.sage")
+load(pathStr+"pSeriesTuple.sage")
 """
 Outline:
 At each (recursive) step, program asks user for which
