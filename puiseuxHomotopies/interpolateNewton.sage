@@ -36,7 +36,7 @@ def newtonStep(x0,F,J,termsTarget):
     N = R.ngens()-1
     print "x0:\n",x0
     k = x0.shape[1] # current number of known terms
-    ci = np.random.rand(termsTarget,1)
+    ci = np.random.rand(termsTarget,1)/1000
     # fixed seed for predictability:
     #ci = np.array([[i*0.1] for i in xrange(termsTarget)])
     #ci = np.array([[i] for i in xrange(2,termsTarget+2)])
@@ -59,21 +59,29 @@ def newtonStep(x0,F,J,termsTarget):
         subDict[R.0] = ci[i][0] # for first variable, sub just the value
         Ji = np.array(map(lambda a:a.subs(subDict),J.list()))
         Ji.shape = (N,N)
-        # To multiply on LHS, row sums are faster.
-        # np.newaxis.T turns list into column vector
-        Ji = Ji.sum(axis=1)[np.newaxis].T
-        LHSi = np.dot(Ji,powers[i][np.newaxis]) # Multiplying on LHS.
         Fi = -np.array(map(lambda f:[f.subs(subDict)],F)) #col vector of F@ci
-        LHS.append(LHSi) # List of: #vars x #ci matrices
+        LHS.append(Ji)
         RHS.append(Fi)   # List of: #vars x 1 matrices
-    LHS = np.dstack(LHS) #vars x #ci x #ci
-    RHS = np.dstack(RHS) #vars x 1 x #ci
-    sols = []
-    for i in xrange(N): # Loop through, solve each
-        sol = np.linalg.solve(LHS[i],RHS[i].T).T
-        #sol = np.linalg.lstsq(LHS[i],RHS[i].T)
-        sols.append(sol)
-    return sols
+    RHS = np.concatenate(RHS) #vars x 1 x #ci
+    
+    leftC = np.insert(powers,range(1,termsTarget+1),0,axis=0)
+    rightC = np.insert(powers,range(termsTarget),0,axis=0)
+    C = np.concatenate([leftC,rightC],axis=1)
+
+    zeros = np.zeros(LHS[0].shape)
+    for i in xrange(len(LHS)):
+        asdf = [zeros]*termsTarget
+        asdf[i] = LHS[i]
+        LHS[i] = np.concatenate(asdf,axis=1)
+    Jmat = np.concatenate(LHS)
+    LHS = np.dot(Jmat,C)
+    sol = np.linalg.solve(LHS,RHS)
+    sol.shape=[2,-1]
+    x0 = np.insert(x0,[k]*(termsTarget-k),0,axis=1)
+    return x0 + sol
+    return LHS,RHS,sol
+
+
 #------------------------------------------------------------------------------#
 
 R.<x,y,z> = QQ[]
@@ -81,10 +89,14 @@ I = R*(x+y*z,2*x^2+x*z+y+1)
 F = I.gens()
 #x0 = np.array([[-1,0],[0,1]]) # puiseux initial form solution
 x0 = np.array([[-1,0,-3,0],[0,1,0,-3]]) # "" with one more term found
-asdf = newtonStep(x0,F,jacobian(F,(y,z)),termsTarget=6)
+asdf = newtonStep(x0,F,jacobian(F,(y,z)),termsTarget=12)
+print "Solution:"
+print asdf
+
+"""
 print "Solution:"
 for i in asdf:
     print '[',
     for j in i[0]:print j,' ',
     print ']'
-
+"""
