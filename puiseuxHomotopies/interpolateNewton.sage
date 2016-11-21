@@ -36,10 +36,10 @@ def newtonStep(x0,F,J,termsTarget):
     N = R.ngens()-1
     print "x0:\n",x0
     k = x0.shape[1] # current number of known terms
-    #ci = np.random.rand(termsTarget,1)
+    ci = np.random.rand(termsTarget,1)
     # fixed seed for predictability:
-    ci = np.array([[i*0.1] for i in xrange(termsTarget)])
-    ci = np.array([[i] for i in xrange(2,termsTarget+2)])
+    #ci = np.array([[i*0.1] for i in xrange(termsTarget)])
+    #ci = np.array([[i] for i in xrange(2,termsTarget+2)])
     print "c_i's:\n",ci
     # powers will be rows of ci^column#, i.e. rows are ci, columns are term#
     powers = np.empty((termsTarget,termsTarget))
@@ -55,62 +55,36 @@ def newtonStep(x0,F,J,termsTarget):
     # Evaluating J and F, and multiply on LHS by J.
     # These were horizontal slices in my notes.
     for i in xrange(termsTarget):
-        #subDict = {R.gens()[j+1]: x0evalled[i][j] for j in xrange(R.ngens()-1)}
         subDict = {xi: x0ci for xi,x0ci in zip(R.gens()[1:],x0evalled[i])}
         subDict[R.0] = ci[i][0] # for first variable, sub just the value
         Ji = np.array(map(lambda a:a.subs(subDict),J.list()))
         Ji.shape = (N,N)
-        Ji = Ji.sum(axis=1)[np.newaxis].T # To multiply on LHS, need row sums
-        LHSi = np.dot(Ji,powers[i][np.newaxis]) # Multiplying on LHS
-        Fi = np.array(map(lambda f:[f.subs(subDict)],F)) #col vector of F@ci
-        LHS.append(LHSi)
-        RHS.append(Fi)
-    J = np.dstack(Jevalled) #eqs x #vars x #ci's
-    F = np.dstack(Fevalled).transpose() #cis x 1 x #vars
-    #C = np.empty([termsTarget for i in xrange(3)])
-    #C[:,:,:] = powers
-    #C = C.transpose([1,2,0]) # powers repeated at depth
-    #print 'C:\n',C
-    """
-    # other version
-    C = []
-    J = map(lambda a:a.sum(axis=1),np.dsplit(J,termsTarget))
-    for row,Jci  in zip(powers,J): #loop over horizontal slices
-        C.append(np.dot(Jci,row.reshape((1,termsTarget))))
-    C = np.dstack(C).transpose((2,0,1))
-
-    # alternate way
-    J = J.sum(axis=1) # was termsTarget x n x n, now termsTarget x n
-    J.shape = list(J.shape)+[1]
-    J = J.transpose([0,2,1])
-    powers = powers.T
-    powers.shape = [1,termsTarget,termsTarget]
-    print J.shape
-    print powers.shape
-    C = np.tensordot(J,powers,axes=[[1],[0]])
-    """
+        # To multiply on LHS, row sums are faster.
+        # np.newaxis.T turns list into column vector
+        Ji = Ji.sum(axis=1)[np.newaxis].T
+        LHSi = np.dot(Ji,powers[i][np.newaxis]) # Multiplying on LHS.
+        Fi = -np.array(map(lambda f:[f.subs(subDict)],F)) #col vector of F@ci
+        LHS.append(LHSi) # List of: #vars x #ci matrices
+        RHS.append(Fi)   # List of: #vars x 1 matrices
+    LHS = np.dstack(LHS) #vars x #ci x #ci
+    RHS = np.dstack(RHS) #vars x 1 x #ci
+    sols = []
+    for i in xrange(N): # Loop through, solve each
+        sol = np.linalg.solve(LHS[i],RHS[i].T).T
+        #sol = np.linalg.lstsq(LHS[i],RHS[i].T)
+        sols.append(sol)
+    return sols
+#------------------------------------------------------------------------------#
 
 R.<x,y,z> = QQ[]
 I = R*(x+y*z,2*x^2+x*z+y+1)
 F = I.gens()
 #x0 = np.array([[-1,0],[0,1]]) # puiseux initial form solution
 x0 = np.array([[-1,0,-3,0],[0,1,0,-3]]) # "" with one more term found
-asdf = newtonStep(x0,F,jacobian(F,(y,z)),termsTarget=4)
-print asdf
+asdf = newtonStep(x0,F,jacobian(F,(y,z)),termsTarget=6)
+print "Solution:"
+for i in asdf:
+    print '[',
+    for j in i[0]:print j,' ',
+    print ']'
 
-#------------------------------------------------------------------------------#
-def alternateNewtonStep(ci,x0evalled,F,J,termsTarget,recompute=False):
-    """
-    Same as above, except we return x1 evaluated at the ci's plus
-    at new points, coupled with the new list of points with our new ones
-    appended.
-    Computes next set of terms (coeffs of series).
-    x0 is an nxk matrix, n=#variables, k=#terms, a guess for the root.
-    F is a list of polynomials.
-    J is the Jacobian of F.
-    termsTarget is the number of terms to attempt to compute. Becomes k.
-        Note: termsTarget shouldn't exceed #terms(x0), probably?
-    recompute is whether we re-interpolate for the coeffs of x0 or just reuse
-        them.
-    """
-    pass
