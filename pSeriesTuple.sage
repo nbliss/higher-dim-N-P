@@ -42,6 +42,8 @@ class pSeriesTuple(object):
                 thisCoeff = self.coeffs[termNum][variableNum]
                 thisExp = self.exps[termNum][variableNum]
                 toReturn[variableNum] += thisCoeff * t ** thisExp
+        myRing = PowerSeriesRing(QQbar,'t')
+        return [myRing(elt) for elt in toReturn]
         return toReturn
     def __eq__(self,other):
         if type(other)!=pSeriesTuple or self.numVars != other.numVars:
