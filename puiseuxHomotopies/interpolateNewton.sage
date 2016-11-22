@@ -22,7 +22,7 @@ import numpy as np
 #from numpy.linalg import lstsq
 #from numpy import polyfit as pfit
 #------------------------------------------------------------------------------#
-def newtonStep(x0,F,J,termsTarget):
+def newtonStep(x0,F,J,termsTarget,verbose=False):
     """
     Computes next set of terms (coeffs of series).
     x0 is an nxk matrix, n=#variables, k=#terms, a guess for the root.
@@ -34,26 +34,25 @@ def newtonStep(x0,F,J,termsTarget):
     """
     R = F[0].parent()
     N = R.ngens()-1
-    print "x0:\n",x0
+    if verbose:print "x0:\n",x0
     k = x0.shape[1] # current number of known terms
-    ci = np.random.rand(termsTarget,1)/1000
     # fixed seed for predictability:
     #ci = np.array([[i*0.1] for i in xrange(termsTarget)])
     #ci = np.array([[i] for i in xrange(2,termsTarget+2)])
-    print "c_i's:\n",ci
+    #ci = np.roots([1]+[0]*(termsTarget-1)+[1]).reshape((termsTarget,1))
+    ci = np.random.rand(termsTarget,1)
+    if verbose:print "c_i's:\n",ci
     # powers will be rows of ci^column#, i.e. rows are ci, columns are term#
-    powers = np.empty((termsTarget,termsTarget))
+    powers = np.empty((termsTarget,termsTarget),dtype=type(ci[0][0]))
     powers[:,:]=ci
     powers[:,0] = np.array([1 for c in ci])
     np.multiply.accumulate(powers,axis=1,out=powers)
-    print "Powers:\n",powers
+    if verbose:print "Powers:\n",powers
     # for each row in x0, take dot products with rows of powers:
     # rows are ci's, columns are different series components (variables)
     x0evalled = np.dot(powers[:,:k],np.transpose(x0))
-    LHS = []
-    RHS = []
-    # Evaluating J and F, and multiply on LHS by J.
-    # These were horizontal slices in my notes.
+    LHS,RHS = [],[]
+    # Evaluating J and F
     for i in xrange(termsTarget):
         subDict = {xi: x0ci for xi,x0ci in zip(R.gens()[1:],x0evalled[i])}
         subDict[R.0] = ci[i][0] # for first variable, sub just the value
@@ -76,6 +75,8 @@ def newtonStep(x0,F,J,termsTarget):
     Jmat = np.concatenate(LHS)
     LHS = np.dot(Jmat,C)
     sol = np.linalg.solve(LHS,RHS)
+    resid = (np.dot(LHS,sol)-RHS)
+    #print resid.max(),resid.min()
     sol.shape=[2,-1]
     x0 = np.insert(x0,[k]*(termsTarget-k),0,axis=1)
     return x0 + sol
@@ -83,20 +84,34 @@ def newtonStep(x0,F,J,termsTarget):
 
 
 #------------------------------------------------------------------------------#
+np.set_printoptions(suppress=True,precision=2,linewidth=128)
+def printy(x):#prints 2d numpy array, better
+    r,c = x.shape
+    for i in xrange(r):
+        for j in xrange(c):
+            print x[i,j],'  ',
+        print
 
 R.<x,y,z> = QQ[]
 I = R*(x+y*z,2*x^2+x*z+y+1)
 F = I.gens()
+J = jacobian(F,(y,z))
 #x0 = np.array([[-1,0],[0,1]]) # puiseux initial form solution
 x0 = np.array([[-1,0,-3,0],[0,1,0,-3]]) # "" with one more term found
-asdf = newtonStep(x0,F,jacobian(F,(y,z)),termsTarget=12)
+asdf = newtonStep(x0,F,J,termsTarget=6)
 print "Solution:"
-print asdf
+printy(asdf)
 
-"""
-print "Solution:"
-for i in asdf:
-    print '[',
-    for j in i[0]:print j,' ',
-    print ']'
+asdf2 = newtonStep(asdf,F,J,termsTarget=8)
+asdf3 = newtonStep(asdf2,F,J,termsTarget=10)
+for i in xrange(4):
+    asdf3 = newtonStep(asdf3,F,J,termsTarget=12+2*i)
+
+""" Actual answer:
+[t,
+ -1 - 3*t^2 + 3*t^4 - 12*t^6 + 57*t^8 - 300*t^10,
+ t - 3*t^3 + 12*t^5 - 57*t^7 + 300*t^9 - 1686*t^11]
+or
+[-1  0  -3   0  3   0  -12  0   57   0  -300]
+[ 0  1   0  -3  0   12  0  -57  300  0  -1686]
 """
