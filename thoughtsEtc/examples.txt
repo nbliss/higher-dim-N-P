@@ -1,16 +1,15 @@
 # viviani
 R.<x,y,z> = PolynomialRing(QQ,3)
 p = x^2+y^2+z^2-4
-q = (x-1)^2+y^2-1
+q = (x-1)^2+y^2-1 # == x^2 + y^2 - 2*x
 I = (p,q)*R
 sol = newtonPuiseux(I)
 
 
-
 # viviani (shifted so self intersection is at origin)
 R.<x,y,z> = PolynomialRing(QQ,3)
-p = x^2 + y^2 + z^2 + 4*x
-q = x^2 + y^2 + 2*x
+p = x^2 + y^2 + z^2 + 4*x   # == (x+2)^2 + y^2 + z^2 - 4
+q = x^2 + y^2 + 2*x         # == (x+1)^2 + y^2 - 1
 I = (p,q)*R
 sol = newtonPuiseux(I)
 
