@@ -26,11 +26,23 @@ def printy(a,rounded=False):
 def newtonStep(x0,J,F):
     subDict = {a:b for a,b in zip(F[0].parent().gens(),x0.list())}
     J = J.subs(subDict)
-    F = vector(map(lambda a:a.subs(subDict),F))
+    F = matrix(map(lambda a:a.subs(subDict),F)).T
     #return (x0-J.solve_right(F))
     #return (x0-J.transpose().solve_left(F))
-    return x0 - J.inverse()*F
-
+    def printNumTerms(listy):
+        #print map(lambda a:len(a.coefficients()),listy)
+        print map(lambda a:a.precision_relative(),listy)
+    deltaX = J.inverse()*F
+    print '->'*30
+    printNumTerms(x0.list())
+    printNumTerms(J.list())
+    printNumTerms(F.list())
+    printNumTerms(J.inverse().list())
+    printNumTerms(deltaX.list())
+    printNumTerms((x0-deltaX).list())
+    print '<-'*30
+    #print F[0]
+    return x0 - deltaX
 def newtonMethod(sol,F,prec=15):
     """
     sol should be a vertical matrix
@@ -44,6 +56,7 @@ def newtonMethod(sol,F,prec=15):
         xNext = newtonStep(xCurr,J,F)
         sols.append(xCurr)
         xCurr = xNext
+    return sols
     return sols[-1]
 
 def makeIdealOverPS(I,varIndex=0,default_prec=35):
@@ -58,7 +71,7 @@ def makeIdealOverPS(I,varIndex=0,default_prec=35):
     #R = PolynomialRing(origRing.remove_var(*ringVars))
     return R*I,PP
 
-example=1
+example=3
 if example==1:
     """
     Viviani
@@ -104,8 +117,8 @@ elif example==3:
     R.inject_variables()
     F = [y^2 - x^3 + y + z, z^2 + x^3 + y + z]
     jac = jacobian(F,[y,z])
-    x0 = [-x,x]
+    x0 = matrix([-x,x]).T
     #x0 = [-x,1.1*x]
     asdf = newtonMethod(x0,F)
-if example!=0:printy(asdf[-1],True)
+#if example!=0:printy(asdf[-1],True)
 
