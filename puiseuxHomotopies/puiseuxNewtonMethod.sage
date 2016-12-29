@@ -50,12 +50,15 @@ def makeIdealOverPS(I,varIndex=0,default_prec=35):
     origRing = I.ring()
     ringVars = list(origRing.gens())
     expandVar = ringVars.pop(varIndex)
-    #PP = PowerSeriesRing(origRing.base_ring(),str(expandVar),default_prec=default_prec,sparse=True)
+    print ringVars
+    #PP = PowerSeriesRing(origRing.base_ring(),str(expandVar),default_prec=default_prec,#sparse=True)
     PP = LaurentSeriesRing(origRing.base_ring(),str(expandVar),default_prec=default_prec)
+    #PP = FractionField(origRing.remove_var(*ringVars))
     R = PolynomialRing(PP,str(ringVars)[1:-1])
+    #R = PolynomialRing(origRing.remove_var(*ringVars))
     return R*I,PP
 
-example=0
+example=1
 if example==1:
     """
     Viviani
@@ -67,8 +70,8 @@ if example==1:
     I = R*(y^2 + z^2 - 4 + 4*x^4, y^2 - 4*x^2 + 4*x^4)
     I,PP = makeIdealOverPS(I,default_prec=15)
     x=PP.0
-    x0 = vector([1.9999*x,1.9999])
-    #x0 = vector([2*x,2])
+    #x0 = vector([1.9999*x,1.9999])
+    x0 = vector([2*x,2])
     asdf = newtonMethod(x0,I)
 elif example==2:
     """
